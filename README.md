@@ -1,146 +1,136 @@
-Chain-Flip
-==========
+ChainFlip
+=========
 
-Overview
---------
-
-**Chain-Flip** is a decentralized coin flip betting game built on blockchain technology using Chainlink VRF (Verifiable Random Function) for secure and provably fair randomness. The project allows players to create and join matches with automatic payout distribution, fee management, and advanced security measures.
+ChainFlip is a decentralized coin flip betting game built on the blockchain, utilizing Chainlink VRF for provable randomness. Players can create and join matches, with winnings automatically distributed to the winner.
 
 Features
 --------
 
--   **Decentralized Betting:** Players can create and join coin flip matches directly on the blockchain.
+-   **Decentralized Betting**: Fair and transparent coin flip game.
+-   **Chainlink VRF Integration**: Ensures unbiased randomness.
+-   **Automated Refunds**: Handles failed transactions and refunds automatically.
+-   **Flexible Configuration**: Owners can set minimum bet amounts and fees.
+-   **Chainlink Automation**: Detects and handles stuck matches automatically.
 
--   **Provably Fair Randomness:** Utilizes Chainlink VRF to ensure tamper-proof random outcomes.
-
--   **Automatic Payouts:** Winnings are automatically transferred to the winner's address.
-
--   **Fee Management:** The contract collects a customizable fee (default 5%, max 10%) on each match.
-
--   **Unclaimed Prizes & Refunds:** Handles failed prize transfers and match cancellations with refund mechanisms.
-
--   **Automation:** Uses Chainlink Automation to handle stuck matches and ensure smooth operation.
-
--   **Security:** Implements reentrancy guards and permissioned functions to secure the contract.
-
-Technologies Used
+Project Structure
 -----------------
 
--   **Solidity:** Smart contract development language.
+```
+chain-flip/
+├── backend/               # Forge project for smart contracts
+│   ├── src/               # Solidity contracts
+│   ├── script/            # Deployment and interaction scripts
+│   ├── test/              # Unit and integration tests
+│   ├── lib/               # Git submodules for dependencies
+│   ├── foundry.toml       # Foundry configuration
+│   ├── .gitignore         # Backend-specific ignores
+├── frontend/              # Next.js project for frontend
+│   ├── pages/             # Next.js pages
+│   ├── components/        # React components
+│   ├── public/            # Static files
+│   ├── styles/            # CSS/SCSS styles
+│   ├── package.json       # Node.js dependencies
+│   ├── next.config.js     # Next.js configuration
+│   ├── .gitignore         # Frontend-specific ignores
+├── README.md              # Project documentation
+└── .gitignore             # Root Git ignore file
 
--   **Chainlink VRF:** Provides secure randomness.
+```
 
--   **Chainlink Automation:** Automates contract upkeep.
-
--   **OpenZeppelin ReentrancyGuard:** Protects against reentrancy attacks.
-
--   **Forge:** Development and testing framework for Ethereum smart contracts.
-
-Smart Contract Details
-----------------------
-
-### CoinFlip.sol
-
--   **createMatch:** Allows a player to create a new betting match.
-
--   **joinMatch:** Enables another player to join an existing match.
-
--   **cancelMatch:** Cancels a match before another player joins.
-
--   **fulfillRandomWords:** Callback function from Chainlink VRF to determine match results.
-
--   **withdrawRefund & claimPrize:** Allow players to withdraw refunds or claim unclaimed prizes.
-
--   **Admin Functions:** Set minimum bet amounts, fee percentages, and withdraw collected fees.
-
-### Interactions Scripts
-
--   **DeployCoinFlip:** Deploys the CoinFlip contract and sets up Chainlink VRF subscriptions.
-
--   **CreateSubscription:** Manages Chainlink VRF subscription creation.
-
--   **FundSubscription:** Funds the Chainlink VRF subscription.
-
--   **AddConsumer:** Registers the CoinFlip contract as a consumer for the VRF subscription.
-
-Installation & Setup
---------------------
+Getting Started
+---------------
 
 ### Prerequisites
 
--   **Node.js & npm**
+Make sure you have the following installed:
 
--   **Foundry** (for smart contract development)
-
--   **MetaMask** (for interacting with deployed contracts)
+-   [Node.js](https://nodejs.org/) (v16 or higher)
+-   [Foundry](https://getfoundry.sh/) for Solidity development
+-   [Git](https://git-scm.com/)
 
 ### Clone the Repository
 
 ```
-git clone https://github.com/KMean/chain-flip.git
+git clone https://github.com/yourusername/chain-flip.git
 cd chain-flip
-```
-
-### Install Dependencies
 
 ```
+
+### Initialize Submodules
+
+Ensure that the submodules are properly initialized to fetch all dependencies:
+
+```
+git submodule update --init --recursive
+
+```
+
+### Backend Setup
+
+Navigate to the backend directory and ensure everything is installed:
+
+```
+cd backend
 forge install
-```
-
-### Configuration
-
-Update the `HelperConfig` contract with your specific Chainlink VRF subscription details and network configurations.
-
-Running the Project
--------------------
-
-### Deploy Contracts
 
 ```
-forge script script/DeployCoinFlip.s.sol:DeployCoinFlip --broadcast --rpc-url <YOUR_RPC_URL>
-```
 
-### Running Tests
+Run tests to ensure everything is set up correctly:
 
 ```
 forge test
-```
-
-### Fuzz Testing
 
 ```
-forge test --match-path test/CoinFlipFuzzTest.t.sol
+
+### Frontend Setup
+
+Navigate to the frontend directory and install dependencies:
+
 ```
+cd ../frontend
+npm install
+
+```
+
+Start the development server:
+
+```
+npm run dev
+
+```
+
+The frontend will be available at [http://localhost:3000](http://localhost:3000/).
+
+Deployment
+----------
+
+### Deploy Smart Contracts
+
+From the `backend` directory, deploy the contracts:
+
+```
+forge script script/DeployCoinFlip.s.sol --broadcast --verify
+
+```
+
+### Configure Frontend
+
+After deployment, update the frontend with the deployed contract addresses and ABI in the environment variables or configuration files.
 
 Contributing
 ------------
 
-Contributions are welcome! Feel free to fork the repository and submit pull requests.
-
 1.  Fork the repository.
-
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
-
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-
-5.  Open a pull request.
+2.  Create your feature branch (`git checkout -b feature/your-feature`).
+3.  Commit your changes (`git commit -m 'Add new feature'`).
+4.  Push to the branch (`git push origin feature/your-feature`).
+5.  Open a Pull Request.
 
 License
 -------
 
-This project is licensed under the MIT License.
-
-Acknowledgments
----------------
-
--   [Chainlink](https://chain.link/)
-
--   [OpenZeppelin](https://openzeppelin.com/)
-
--   Foundry
+This project is licensed under the MIT License. See the [LICENSE](https://chatgpt.com/c/LICENSE) file for details.
 
 * * * * *
 
-**Author:** Kim Ranzani - KMean
+Enjoy flipping with ChainFlip! 🎲
