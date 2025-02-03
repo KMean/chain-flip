@@ -1,0 +1,28 @@
+# Node modules and environment files for frontend
+/frontend/node_modules/
+/frontend/.env.local
+/frontend/.next/
+/frontend/.turbo/
+/frontend/.eslintcache
+
+# Build output for backend (Forge)
+backend/cache/
+backend/out/
+
+
+# Ignore lib folder but track submodules
+/backend/lib/*
+!/backend/lib/.gitkeep
+!/backend/lib/forge-std
+!/backend/lib/chainlink-brownie-contracts
+!/backend/lib/openzeppelin-contracts
+!/backend/lib/solmate
+!/backend/lib/foundry-devops
+
+# Ignore broadcast logs but keep the folder structure
+/backend/broadcast/*
+!/backend/broadcast/.gitkeep
+
+# General ignores
+.DS_Store
+.env

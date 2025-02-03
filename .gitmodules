@@ -1,0 +1,15 @@
+[submodule "backend/lib/forge-std"]
+	path = backend/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "backend/lib/chainlink-brownie-contracts"]
+	path = backend/lib/chainlink-brownie-contracts
+	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
+[submodule "backend/lib/openzeppelin-contracts"]
+	path = backend/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "backend/lib/solmate"]
+	path = backend/lib/solmate
+	url = https://github.com/transmissions11/solmate
+[submodule "backend/lib/foundry-devops"]
+	path = backend/lib/foundry-devops
+	url = https://github.com/Cyfrin/foundry-devops
