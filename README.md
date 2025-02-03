@@ -1,4 +1,4 @@
-ChainFlip
+Chain Flip
 =========
 
 ChainFlip is a decentralized coin flip betting game built on the blockchain, utilizing Chainlink VRF for provable randomness. Players can create and join matches, with winnings automatically distributed to the winner.
