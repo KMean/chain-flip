@@ -108,6 +108,11 @@ npm run dev
 
 The frontend will be available at [http://localhost:3000](http://localhost:3000/).
 
+I suggest using wagmi/CLI to generate your wagmi hooks
+```bash
+wagmi generate --config wagmi.config.ts
+```
+
 Deployment
 ----------
 
