@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     useAccount,
     useReadContracts,
@@ -8,7 +8,7 @@ import {
 } from "wagmi";
 import { formatEther } from "viem";
 import { CONTRACTS } from "../../config/contracts.config";
-import FlipCoin from "@/components/FlipCoin"; // Import the FlipCoin component
+import FlipCoin from "@/components/FlipCoin";
 import {
     PlayIcon,
     FaceFrownIcon,
@@ -20,6 +20,7 @@ import {
     ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
+// ---- Data Model ----
 interface Match {
     id: bigint;
     state: number;
@@ -34,6 +35,10 @@ interface Match {
     player2Choice: boolean;
 }
 
+interface MatchResult {
+    result?: Partial<Match>;
+}
+
 export default function MyGames() {
     const { address } = useAccount();
     const { writeContract } = useWriteContract();
@@ -42,10 +47,10 @@ export default function MyGames() {
     const [activeMatches, setActiveMatches] = useState<Match[]>([]);
     const [endedMatches, setEndedMatches] = useState<Match[]>([]);
 
-    // ----------------------------------------------------------------
-    // 1) Read data from contract
-    // ----------------------------------------------------------------
-    const { data, refetch } = useReadContracts({
+    // ---------------------------
+    // Read contract calls
+    // ---------------------------
+    const { data, refetch } = useReadContracts<[MatchResult, MatchResult, MatchResult]>({
         contracts: [
             {
                 address: CONTRACTS.chainFlip.address,
@@ -69,60 +74,65 @@ export default function MyGames() {
         query: { enabled: !!address },
     });
 
-    const matchIds = data?.[0]?.result || [];
-    const playerStats = data?.[1]?.result || [BigInt(0), BigInt(0)];
-    const refundAmount = data?.[2]?.result || BigInt(0);
+    // getMatchesByPlayer -> array of match IDs
+    // getPlayerStats -> array of stats
+    // getRefunds -> single BigInt
+    const matchIds = (data?.[0]?.result as bigint[] | undefined) || [];
+    const playerStats = (data?.[1]?.result as bigint[] | undefined) || [
+        BigInt(0),
+        BigInt(0),
+        // etc. if you have more stats
+    ];
+    const refundAmount = (data?.[2]?.result as bigint | undefined) || BigInt(0);
 
-    // ----------------------------------------------------------------
-    // 2) Fetch details of each match
-    // ----------------------------------------------------------------
-    const matchContracts = matchIds.map((id: bigint) => ({
+    // ---------------------------
+    // For each match ID, call getMatch
+    // ---------------------------
+    const matchContracts = matchIds.map((id) => ({
         address: CONTRACTS.chainFlip.address,
         abi: CONTRACTS.chainFlip.abi,
         functionName: "getMatch",
         args: [id],
     }));
 
-    const { data: matchesData, refetch: refetchMatches } = useReadContracts({
+    const { data: matchesData, refetch: refetchMatches } = useReadContracts<MatchResult[]>({
         contracts: matchContracts,
         query: { enabled: matchIds.length > 0 },
     });
 
-    // Process matchesData into an array of Match objects
+    // Convert each match result => `Match`
     useEffect(() => {
-        if (matchesData && Array.isArray(matchesData)) {
-            const processed: Match[] = matchesData
-                .map((entry) => {
-                    if (
-                        entry?.result &&
-                        typeof entry.result === "object" &&
-                        "id" in entry.result
-                    ) {
-                        return entry.result as Match;
-                    }
-                    return null;
-                })
-                .filter((m): m is Match => m !== null);
+        if (!matchesData) return;
+        if (!Array.isArray(matchesData)) return;
 
-            setMatches(processed);
-        }
+        const processed: Match[] = matchesData
+            .map((entry) => {
+                const partial = entry.result;
+                // Type guard => ensure partial.id is a bigint
+                if (partial && (partial as Partial<Match>).id && typeof (partial as Partial<Match>).id === "bigint") {
+                    // Once we confirm partial.id is bigint, we can safely cast
+                    return partial as Match;
+                }
+                return null;
+            })
+            .filter((m): m is Match => m !== null);
+
+        setMatches(processed);
     }, [matchesData]);
 
-    // ----------------------------------------------------------------
-    // 3) Separate Active vs. Ended matches
-    // ----------------------------------------------------------------
+    // ---------------------------
+    // Separate active/ended
+    // ---------------------------
     useEffect(() => {
-        // WAITING_FOR_PLAYER = 0, FLIPPING_COIN = 1
         const active = matches.filter((m) => m.state === 0 || m.state === 1);
-        // CANCELED = 2, ENDED = 3
         const ended = matches.filter((m) => m.state === 2 || m.state === 3);
         setActiveMatches(active);
         setEndedMatches(ended);
     }, [matches]);
 
-    // ----------------------------------------------------------------
-    // 4) Write functions
-    // ----------------------------------------------------------------
+    // ---------------------------
+    // Write functions
+    // ---------------------------
     const handleCancelMatch = (matchId: bigint) => {
         writeContract({
             address: CONTRACTS.chainFlip.address,
@@ -142,9 +152,8 @@ export default function MyGames() {
     };
 
     // ----------------------------------------------------------------
-    // 5) Watch events at top level
+    // Watch events at top level
     // ----------------------------------------------------------------
-    // 'MatchCreated'
     useWatchContractEvent({
         address: CONTRACTS.chainFlip.address,
         abi: CONTRACTS.chainFlip.abi,
@@ -156,7 +165,6 @@ export default function MyGames() {
         },
     });
 
-    // 'MatchJoined'
     useWatchContractEvent({
         address: CONTRACTS.chainFlip.address,
         abi: CONTRACTS.chainFlip.abi,
@@ -168,7 +176,6 @@ export default function MyGames() {
         },
     });
 
-    // 'MatchEnded'
     useWatchContractEvent({
         address: CONTRACTS.chainFlip.address,
         abi: CONTRACTS.chainFlip.abi,
@@ -180,7 +187,6 @@ export default function MyGames() {
         },
     });
 
-    // 'MatchCanceledByPlayer'
     useWatchContractEvent({
         address: CONTRACTS.chainFlip.address,
         abi: CONTRACTS.chainFlip.abi,
@@ -192,7 +198,6 @@ export default function MyGames() {
         },
     });
 
-    // 'RefundIssued'
     useWatchContractEvent({
         address: CONTRACTS.chainFlip.address,
         abi: CONTRACTS.chainFlip.abi,
@@ -205,7 +210,7 @@ export default function MyGames() {
     });
 
     // ----------------------------------------------------------------
-    // 6) Render UI
+    // Render UI
     // ----------------------------------------------------------------
     return (
         <div className="min-h-screen pt-40 p-8 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-900">
