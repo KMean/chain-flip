@@ -41,7 +41,7 @@ const Navbar = () => {
 
                 {/* Navigation Links */}
                 <Link href="/matches" className="hover:text-gray-300 transition-colors duration-200">Matches</Link>
-                <Link href="/stats" className="hover:text-gray-300 transition-colors duration-200">Stats</Link>
+                <Link href="/dashboard" className="hover:text-gray-300 transition-colors duration-200">Dashboard</Link>
                 <Link href="/leaderboard" className="hover:text-gray-300 transition-colors duration-200">Leader Board</Link>
                 {isOwner && <Link href="/admin" className="hover:text-gray-300 transition-colors duration-200">Admin</Link>}
             </div>
