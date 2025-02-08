@@ -19,3 +19,9 @@ fail_on_revert = false # Fail immediately if a revert happens
 dictionary_weight = 30 # Bias towards using known values
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
+[rpc_endpoints]
+amoy = "${AMOY_RPC_URL}"
+
+[etherscan]
+amoy = { key = "${POLYGON_SCAN_API_KEY}" }

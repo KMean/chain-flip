@@ -62,15 +62,18 @@ contract HelperConfig is CodeConstants, Script {
     }
 
     function getAmoyConfig() public view returns (NetworkConfig memory) {
-        uint256 subscriptionId = vm.envUint("CHAINLINK_VRF_AMOY_SUBSCRIPTION_ID"); // Load from .env
+        // Load from .env
+        uint256 chainlinkVrfAmoySubscriptionId = vm.envUint("CHAINLINK_VRF_AMOY_SUBSCRIPTION_ID");
+        address account = vm.envAddress("ACCOUNT");
+
         return NetworkConfig({
             minimumBetAmount: 0.1 ether,
             vrfCoordinator: 0x343300b5d84D444B2ADc9116FEF1bED02BE49Cf2,
             keyHash: 0x816bedba8a50b294e5cbd47842baf240c2385f2eaf719edbd4f250a137a8c899,
-            subscriptionId: subscriptionId,
+            subscriptionId: chainlinkVrfAmoySubscriptionId,
             callbackGasLimit: 500000,
             linkToken: 0x0Fd9e8d3aF1aaee056EB9e802c3A762a667b1904,
-            account: 0xc6CD8842EB67684a763Fe776843f693bB3e48850
+            account: account
         });
     }
 

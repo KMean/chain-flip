@@ -1,148 +1,179 @@
-ChainFlip
-=========
+# ChainFlip
 
-ChainFlip is a decentralized coin flip betting game built on the blockchain, utilizing Chainlink VRF for provable randomness. Players can create and join matches, with winnings automatically distributed to the winner.
+**ChainFlip** is a decentralized coin flip betting game, leveraging Chainlink VRF for provable randomness. Players can create and join matches, with automatic payout to the winner. 
 
-Features
---------
+## Features
 
--   **Decentralized Betting**: Fair and transparent coin flip game.
--   **Chainlink VRF Integration**: Ensures unbiased randomness.
--   **Automated Refunds**: Handles failed transactions and refunds automatically.
--   **Flexible Configuration**: Owners can set minimum bet amounts and fees.
--   **Chainlink Automation**: Detects and handles stuck matches automatically.
+- **Decentralized Betting**: Fair and transparent coin flip game.
+- **Chainlink VRF Integration**: Ensures unbiased randomness for outcomes.
+- **Automated Refunds**: Handles failed transactions and refunds automatically.
+- **Flexible Configuration**: Owners can set minimum bet amounts and fees.
+- **Chainlink Automation**: Automatically detects and resolves stuck matches.
 
-Project Structure
------------------
+## **Frontend Features**
 
-```
+The frontend is built with **Next.js** and uses **Wagmi** for blockchain interactions. The UI allows users to:
+
+- **Matches**
+- *Create a Match*: Players can create a new coin flip match by selecting a side and setting a bet amount.
+- *Join a Match*: Players can join an existing match taking the opposite side.
+- *Cancel a Match*: Match creators can cancel a match before it starts. If canceled The player can withdraw his funds from the DashBoard.
+- **Dashboard**: 
+- *Users can see their Active Matches, Match history with results as well as overall stats.*
+- **Leaderboard**:
+- *Displays **top winners** based on winnings.*
+
+
+## Project Structure
+
+```plaintext
 chain-flip/
-├── backend/               # Forge project for smart contracts
-│   ├── src/               # Solidity contracts
-│   ├── script/            # Deployment and interaction scripts
-│   ├── test/              # Unit and integration tests
-│   ├── lib/               # Git submodules for dependencies
-│   ├── foundry.toml       # Foundry configuration
-├── frontend/              # Next.js project for frontend
-│   ├── pages/             # Next.js pages
-│   ├── components/        # React components
-│   ├── public/            # Static files
-│   ├── styles/            # CSS/SCSS styles
-│   ├── package.json       # Node.js dependencies
-│   ├── next.config.js     # Next.js configuration
-├── README.md              # Project documentation
-└── .gitignore             # Root Git ignore file
-
+├── backend/                            # Forge project for smart contracts
+│   ├── script/                         # Deployment & interaction scripts (Foundry)
+│   │   ├── DeployChainFlip.s.sol
+│   │   ├── HelperConfig.s.sol
+│   │   └── Interactions.s.sol
+│   ├── src/                            # Solidity contracts
+│   │   └── ChainFlip.sol
+│   ├── foundry.toml                    # Foundry configuration
+│   └── test/                           # Unit, fuzz, integration, and invariant tests
+├── frontend/                           # Next.js project for the user interface
+│   ├── app/                            # App Router folder for Next.js
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── providers.tsx
+│   ├── components/                     # Reusable React components
+│   │   ├── AdminDashboard.tsx
+│   │   ├── FlipCoin.tsx
+│   │   ├── MatchCard.tsx
+│   │   └── Navbar.tsx
+│   ├── config/                         # Wagmi & contract configuration
+│   │   ├── chainflip.ts
+│   │   ├── contracts.config.ts
+│   │   ├── wagmi.ts
+│   │   └── wagmiGenerate.config.ts
+│   ├── public/                         # Static assets
+│   │   ├── background.mp4
+│   │   ├── chainflip_logo.png
+│   │   └── coin.png
+│   ├── package.json                    # Frontend dependencies
+│   └── ...other files
+├── README.md                           # Project documentation
+└── .gitignore                          # Git ignore file
 ```
 
-Getting Started
----------------
+## Getting Started
 
 ### Prerequisites
 
 Make sure you have the following installed:
 
--   [Node.js](https://nodejs.org/) (v16 or higher)
--   [Foundry](https://getfoundry.sh/) for Solidity development
--   [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [Foundry](https://book.getfoundry.sh/) for Solidity development
+- [Git](https://git-scm.com/)
 
 ### Clone the Repository
 
-```
+```bash
 git clone https://github.com/KMean/chain-flip.git
 cd chain-flip
-
 ```
 
 ### Initialize Submodules
 
-Ensure that the submodules are properly initialized to fetch all dependencies:
+Ensure submodules are properly initialized to fetch all dependencies:
 
-```
-git submodule update --init --recursive
-
-```
-
-### Backend Setup
-
-Navigate to the backend directory and ensure everything is installed:
-
-```
-cd backend
-forge install
-
-```
-
-**Important:** Update the `subscriptionId` and `account` fields in `HelperConfig.s.sol` to match your Chainlink VRF subscription details.
-
-Run tests to ensure everything is set up correctly:
-
-```
-forge test
-
-```
-
-### Frontend Setup
-
-Navigate to the frontend directory and install dependencies:
-
-```
-cd ../frontend
-npm install
-
-```
-
-**Important:** Copy `.env_example` to `.env` and update it with your own Alchemy or Infura API keys:
-
-```
-cp .env_example .env
-
-```
-
-Start the development server:
-
-```
-npm run dev
-
-```
-
-The frontend will be available at [http://localhost:3000](http://localhost:3000/).
-
-I suggest using wagmi/CLI to generate your wagmi hooks
 ```bash
-wagmi generate --config wagmi.config.ts
+git submodule update --init --recursive
 ```
 
-Deployment
-----------
+## Backend Setup
 
-### Deploy Smart Contracts
+1. **Navigate** to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. **Install dependencies**:
+   ```bash
+   forge install
+   ```
+3. **Copy environment variables**:
+   ```bash
+   cp .env_example .env
+   ```
 
-From the `backend` directory, deploy the contracts:
+   Update `AMOY_RPC_URL`, `CHAINLINK_VRF_AMOY_SUBSCRIPTION_ID`, `ACCOUNT`, `POLYGON_SCAN_API_KEY` in `.env`.
 
+
+4. **Run tests**:
+   ```bash
+   forge test
+   ```
+
+5. **Encrypt Metamask Private Key** (Optional but recommended):
+   ```bash
+   cast wallet import your-account-name --interactive
+   ```
+   Follow the prompts to secure your private key.
+
+### Deploy the Contract
+
+```bash
+forge script --chain amoy script/DeployChainFlip.s.sol --rpc-url $AMOY_RPC_URL --account 'your-account-name' --broadcast --verify -vvvv  
 ```
-forge script script/DeployCoinFlip.s.sol --broadcast --verify
 
+## Frontend Setup
+
+1. **Navigate** to the frontend directory:
+   ```bash
+   cd ../frontend
+   ```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Copy environment variables**:
+   ```bash
+   cp .env.local_example .env.local
+   ```
+   Update `NEXT_PUBLIC_RAINBOW_PROJECT_ID`, `NEXT_PUBLIC_ALCHEMY_API_URL`, `NEXT_PUBLIC_CHAINFLIP_CONTRACT_ADDRESS`.
+
+4. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+   The frontend will be available at [http://localhost:3000](http://localhost:3000/).
+
+## Generate Wagmi Hooks
+
+If modifying the contract, regenerate frontend hooks:
+```bash
+wagmi generate --config frontend/config/wagmiGenerate.config.ts
 ```
+This will update the ABI for the frontend to interact with the contract. The output defaults to `chainflip.ts` inside the same folder, but you can change this setup as needed in `wagmiGenerate.config.ts`. If you do so, remember to update `contracts.config.ts` to extract the correct ABI.
 
-### Configure Frontend
+## Contributing
 
-After deployment, update the frontend with the deployed contract addresses and ABI in the environment variables or configuration files.
+1. Fork the repository.
+2. Create your feature branch:
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m 'Add new feature'
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature/your-feature
+   ```
+5. Open a Pull Request.
 
-Contributing
-------------
+## License
 
-1.  Fork the repository.
-2.  Create your feature branch (`git checkout -b feature/your-feature`).
-3.  Commit your changes (`git commit -m 'Add new feature'`).
-4.  Push to the branch (`git push origin feature/your-feature`).
-5.  Open a Pull Request.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-License
--------
+---
 
-This project is licensed under the MIT License. See the [LICENSE](https://chatgpt.com/c/LICENSE) file for details.
-
-* * * * *
-
-Enjoy flipping with ChainFlip! 🌪️
+Enjoy flipping with **ChainFlip**!

@@ -92,7 +92,6 @@ contract ChainFlipInvariantsTest is StdInvariant, Test {
         }
 
         // 2) Also check the reverse: no ENDED or CANCELED match remains in the activeMatches array
-        // (the same check above also covers it, but you can do it explicitly if you prefer).
     }
 
     function getActiveMatchIds() internal view returns (uint256[] memory) {

@@ -1,0 +1,41 @@
+.
+├── README.md
+├── backend
+│   ├── foundry.toml
+│   ├── script
+│   │   ├── DeployChainFlip.s.sol
+│   │   ├── HelperConfig.s.sol
+│   │   └── Interactions.s.sol
+│   └── src
+│       └── ChainFlip.sol
+├── frontend
+│   ├── app
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── providers.tsx
+│   ├── components
+│   │   ├── AdminDashboard.tsx
+│   │   ├── FlipCoin.tsx
+│   │   ├── MatchCard.tsx
+│   │   └── Navbar.tsx
+│   ├── config
+│   │   ├── chainflip.ts
+│   │   ├── contracts.config.ts
+│   │   ├── wagmi.ts
+│   │   └── wagmiGenerate.config.ts
+│   ├── eslint.config.mjs
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   │   ├── background.mp4
+│   │   ├── chainflip_logo.png
+│   │   └── coin.png
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
+└── snapshot.txt
+
+9 directories, 30 files
