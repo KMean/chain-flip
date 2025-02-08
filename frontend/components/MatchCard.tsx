@@ -1,9 +1,10 @@
 'use client';
 import React from 'react';
 import { formatEther } from 'viem';
-import { useAccount } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 import { UserCircleIcon, CurrencyDollarIcon, ArrowPathIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import FlipCoin from '@/components/FlipCoin';
+import { config } from '@/config/wagmi';
 
 export interface Match {
     id: bigint;
@@ -25,7 +26,7 @@ interface MatchCardProps {
 
 }
 
-const MatchCard: React.FC<MatchCardProps> = ({ match, onJoin, isJoining, disableJoin, feePercent, pendingJoins }) => {
+const MatchCard: React.FC<MatchCardProps> = ({ match, onJoin, isJoining, disableJoin, feePercent, pendingJoins = [] }) => {
     const matchStates = ['Waiting for Player', 'Flipping Coin', 'Canceled', 'Ended'];
     const statusColors = ['bg-purple-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500'];
     const matchStatus = matchStates[Number(match.state)];
@@ -36,6 +37,10 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onJoin, isJoining, disable
     const fee = (totalBet * feePercentValue) / BigInt(10000);
     const adjustedPrizePool = totalBet - fee;
 
+    // Get chain ID
+    const chainId = useChainId();
+    const chain = config.chains.find((c) => c.id === chainId);
+    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
     return (
         <div className="relative min-w-[280px] bg-white/5 dark:bg-blue border border-white dark:border-gray-700 rounded-xl shadow-xl hover:shadow-2xl transition-shadow duration-300 p-6">
             {/* Flipping Coin Animation Overlay */}
@@ -59,7 +64,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onJoin, isJoining, disable
 
             {/* Bet Amount */}
             <div className="border-b border-gray-200 dark:border-gray-700 mb-4">
-                <h3 className='text-md font-bold text-purple-300'>Bet: {formatEther(match.betAmount)} ETH</h3>
+                <h3 className='text-md font-bold text-purple-300'>Bet: {formatEther(match.betAmount)} {nativeCurrency}</h3>
             </div>
 
             {/* Match Details */}
@@ -92,7 +97,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onJoin, isJoining, disable
                     <CurrencyDollarIcon className="w-5 h-5 mr-2 text-green-300" />
                     <span className="font-medium">Prize Pool:</span>
                     <span className="ml-2 text-blue-400">
-                        {formatEther(adjustedPrizePool)} ETH
+                        {formatEther(adjustedPrizePool)} {nativeCurrency}
                     </span>
                 </div>
 

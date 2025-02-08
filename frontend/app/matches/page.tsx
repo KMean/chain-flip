@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useAccount, useWriteContract, useReadContracts, useReadContract, useWatchContractEvent } from 'wagmi';
+import { useAccount, useWriteContract, useReadContracts, useReadContract, useWatchContractEvent, useChainId } from 'wagmi';
+import { config } from '@/config/wagmi';
 import { parseEther } from 'viem';
 import MatchCard, { Match } from '@/components/MatchCard';
 import { CONTRACTS } from '../../config/contracts.config';
@@ -16,6 +17,11 @@ const Matches = () => {
     const [creatingMatch, setCreatingMatch] = useState(false);
     const [choice, setChoice] = useState<boolean>(true);
     const [betAmount, setBetAmount] = useState<number>(0.1);
+
+    // Get chain ID
+    const chainId = useChainId();
+    const chain = config.chains.find((c) => c.id === chainId);
+    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
 
     // Fetch all matches (active + ended)
     const { data: allMatchesData, refetch: refetchMatches } = useReadContract({
@@ -176,7 +182,7 @@ const Matches = () => {
                             value={betAmount}
                             onChange={(e) => setBetAmount(parseFloat(e.target.value))}
                             className="flex-1 px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none w-full lg:w-auto"
-                            placeholder="Bet Amount (POL)"
+                            placeholder="Bet Amount (ETH)"
                         />
 
                         {/* Choice Selector */}
@@ -200,7 +206,7 @@ const Matches = () => {
                             ) : (
                                 <PlusIcon className="w-5 h-5" />
                             )}
-                            {creatingMatch ? 'Creating Match...' : `New Match (${betAmount} POL)`}
+                            {creatingMatch ? 'Creating Match...' : `New Match (${betAmount} ${nativeCurrency})`}
                         </button>
                     </div>
                 </div>

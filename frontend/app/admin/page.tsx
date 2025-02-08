@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import {
     useWriteContract,
     useReadContracts,
-    useWatchContractEvent
+    useWatchContractEvent,
 } from "wagmi";
 import { CONTRACTS } from "@/config/contracts.config";
 import AdminDashboard from "@/components/AdminDashboard";
@@ -18,6 +18,8 @@ const AdminPage = () => {
     const [timeout, setTimeout] = useState(60);
     const [recipient, setRecipient] = useState("");
     const [withdrawAmount, setWithdrawAmount] = useState(0);
+
+
 
     // Reading from multiple contract functions
     const { data, refetch } = useReadContracts({

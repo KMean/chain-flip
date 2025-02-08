@@ -1,11 +1,8 @@
 "use client";
+
 import { useState, useEffect } from "react";
-import {
-    useAccount,
-    useReadContracts,
-    useWatchContractEvent,
-    useWriteContract,
-} from "wagmi";
+import { useAccount, useReadContracts, useWatchContractEvent, useWriteContract, useChainId } from "wagmi";
+import { config } from "../../config/wagmi"; // Import your config
 import { formatEther } from "viem";
 import { CONTRACTS } from "../../config/contracts.config";
 import FlipCoin from "@/components/FlipCoin";
@@ -39,7 +36,7 @@ interface MatchResult {
     result?: Partial<Match>;
 }
 
-export default function MyGames() {
+export default function DashBoard() {
     const { address } = useAccount();
     const { writeContract } = useWriteContract();
 
@@ -47,6 +44,10 @@ export default function MyGames() {
     const [activeMatches, setActiveMatches] = useState<Match[]>([]);
     const [endedMatches, setEndedMatches] = useState<Match[]>([]);
 
+    // Get chain ID
+    const chainId = useChainId();
+    const chain = config.chains.find((c) => c.id === chainId);
+    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
     // ---------------------------
     // Read contract calls
     // ---------------------------
@@ -78,11 +79,7 @@ export default function MyGames() {
     // getPlayerStats -> array of stats
     // getRefunds -> single BigInt
     const matchIds = (data?.[0]?.result as bigint[] | undefined) || [];
-    const playerStats = (data?.[1]?.result as bigint[] | undefined) || [
-        BigInt(0),
-        BigInt(0),
-        // etc. if you have more stats
-    ];
+    const playerStats = (data?.[1]?.result as bigint[] | undefined) || [];
     const refundAmount = (data?.[2]?.result as bigint | undefined) || BigInt(0);
 
     // ---------------------------
@@ -107,10 +104,8 @@ export default function MyGames() {
 
         const processed: Match[] = matchesData
             .map((entry) => {
-                const partial = entry.result;
-                // Type guard => ensure partial.id is a bigint
-                if (partial && (partial as Partial<Match>).id && typeof (partial as Partial<Match>).id === "bigint") {
-                    // Once we confirm partial.id is bigint, we can safely cast
+                const partial = entry.result as Partial<Match>;
+                if (partial && typeof partial.id === "bigint") {
                     return partial as Match;
                 }
                 return null;
@@ -152,14 +147,13 @@ export default function MyGames() {
     };
 
     // ----------------------------------------------------------------
-    // Watch events at top level
+    // Watch events
     // ----------------------------------------------------------------
     useWatchContractEvent({
         address: CONTRACTS.chainFlip.address,
         abi: CONTRACTS.chainFlip.abi,
         eventName: "MatchCreated",
         onLogs: async () => {
-            console.log("Event MatchCreated => refetching...");
             await refetch();
             await refetchMatches();
         },
@@ -170,7 +164,6 @@ export default function MyGames() {
         abi: CONTRACTS.chainFlip.abi,
         eventName: "MatchJoined",
         onLogs: async () => {
-            console.log("Event MatchJoined => refetching...");
             await refetch();
             await refetchMatches();
         },
@@ -181,7 +174,6 @@ export default function MyGames() {
         abi: CONTRACTS.chainFlip.abi,
         eventName: "MatchEnded",
         onLogs: async () => {
-            console.log("Event MatchEnded => refetching...");
             await refetch();
             await refetchMatches();
         },
@@ -192,7 +184,6 @@ export default function MyGames() {
         abi: CONTRACTS.chainFlip.abi,
         eventName: "MatchCanceledByPlayer",
         onLogs: async () => {
-            console.log("Event MatchCanceledByPlayer => refetching...");
             await refetch();
             await refetchMatches();
         },
@@ -203,11 +194,25 @@ export default function MyGames() {
         abi: CONTRACTS.chainFlip.abi,
         eventName: "RefundIssued",
         onLogs: async () => {
-            console.log("Event RefundIssued => refetching...");
             await refetch();
             await refetchMatches();
         },
     });
+
+    // ----------------------------------------------------------------
+    // Parse and label player stats
+    // ----------------------------------------------------------------
+    const totalMatches = Number(playerStats?.[0] ?? 0);
+    const totalWins = Number(playerStats?.[1] ?? 0);
+    const totalLosses = Number(playerStats?.[2] ?? 0);
+    const totalCanceled = Number(playerStats?.[3] ?? 0);
+    const totalAmountWon = playerStats?.[4] ?? BigInt(0);
+    const totalAmountInvested = playerStats?.[5] ?? BigInt(0);
+
+    // derived stats:
+    const playableMatches = totalMatches - totalCanceled;
+    const winPercentage = playableMatches > 0 ? ((totalWins / playableMatches) * 100).toFixed(1) : "0";
+    const netGains = totalAmountWon - totalAmountInvested;
 
     // ----------------------------------------------------------------
     // Render UI
@@ -216,8 +221,8 @@ export default function MyGames() {
         <div className="min-h-screen pt-40 p-8 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-900">
             {/* Glowing Background Layer */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 left-1/2 w-[600px] h-[600px] bg-purple-500 opacity-20 blur-[160px]"></div>
-                <div className="absolute top-40 right-1/3 w-[400px] h-[400px] bg-blue-500 opacity-20 blur-[140px]"></div>
+                <div className="absolute -top-40 left-1/2 w-[600px] h-[600px] bg-purple-500 opacity-20 blur-[160px]" />
+                <div className="absolute top-40 right-1/3 w-[400px] h-[400px] bg-blue-500 opacity-20 blur-[140px]" />
             </div>
 
             <div className="max-w-7xl mx-auto">
@@ -238,49 +243,35 @@ export default function MyGames() {
 
                             <div className="w-full bg-gray-900/20 p-6 rounded-lg shadow-md backdrop-blur-md">
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-10 gap-6 text-center">
-                                    {/* totalMatches */}
+                                    {/* Total Matches */}
                                     <div>
                                         <p className="text-sm text-gray-400">Total Matches</p>
-                                        <p className="text-2xl font-bold text-blue-500">
-                                            {playerStats?.[0]?.toString() ?? "0"}
-                                        </p>
+                                        <p className="text-2xl font-bold text-blue-500">{totalMatches}</p>
                                     </div>
 
-                                    {/* totalWins */}
+                                    {/* Total Wins */}
                                     <div>
                                         <p className="text-sm text-gray-400">Total Wins</p>
-                                        <p className="text-2xl font-bold text-green-500">
-                                            {playerStats?.[1]?.toString() ?? "0"}
-                                        </p>
+                                        <p className="text-2xl font-bold text-green-500">{totalWins}</p>
                                     </div>
 
-                                    {/* totalLosses */}
+                                    {/* Total Losses */}
                                     <div>
                                         <p className="text-sm text-gray-400">Total Losses</p>
-                                        <p className="text-2xl font-bold text-red-500">
-                                            {playerStats?.[2]?.toString() ?? "0"}
-                                        </p>
+                                        <p className="text-2xl font-bold text-red-500">{totalLosses}</p>
                                     </div>
 
-                                    {/* totalCanceled */}
+                                    {/* Total Canceled */}
                                     <div>
                                         <p className="text-sm text-gray-400">Total Canceled</p>
-                                        <p className="text-2xl font-bold text-yellow-500">
-                                            {playerStats?.[3]?.toString() ?? "0"}
-                                        </p>
+                                        <p className="text-2xl font-bold text-yellow-500">{totalCanceled}</p>
                                     </div>
 
                                     {/* Win % */}
                                     <div>
                                         <p className="text-sm text-gray-400">Win %</p>
                                         <p className="text-2xl font-bold text-yellow-400">
-                                            {playerStats?.[0] && playerStats[0] > BigInt(0)
-                                                ? (
-                                                    (Number(playerStats[1]) / Number(playerStats[0])) *
-                                                    100
-                                                ).toFixed(1)
-                                                : "0"}
-                                            %
+                                            {winPercentage}%
                                         </p>
                                     </div>
 
@@ -288,72 +279,57 @@ export default function MyGames() {
                                     <div>
                                         <p className="text-sm text-gray-400">Win/Loss Ratio</p>
                                         <p
-                                            className={`text-2xl font-bold ${playerStats?.[2] === BigInt(0)
+                                            className={`text-2xl font-bold ${totalLosses === 0
                                                 ? "text-gray-400" // No losses
-                                                : Number(playerStats?.[1] ?? 0) /
-                                                    Number(playerStats?.[2] ?? 1) >
-                                                    1
+                                                : totalWins / totalLosses > 1
                                                     ? "text-green-500"
-                                                    : Number(playerStats?.[1] ?? 0) /
-                                                        Number(playerStats?.[2] ?? 1) >
-                                                        0.5
+                                                    : totalWins / totalLosses > 0.5
                                                         ? "text-yellow-400"
                                                         : "text-red-500"
                                                 }`}
                                         >
-                                            {playerStats?.[2] && playerStats[2] > BigInt(0)
-                                                ? (
-                                                    Number(playerStats[1]) /
-                                                    (Number(playerStats[2]) || 1)
-                                                ).toFixed(2)
+                                            {totalLosses > 0
+                                                ? (totalWins / totalLosses).toFixed(2)
                                                 : "∞"}
                                         </p>
                                     </div>
 
-                                    {/* totalAmountInvested */}
+                                    {/* Total Invested */}
                                     <div>
                                         <p className="text-sm text-gray-400">Total Invested</p>
                                         <p className="text-2xl font-bold text-blue-500">
-                                            {formatEther(playerStats?.[5] ?? BigInt(0))}
-                                            <span className="text-sm"> POL</span>
+                                            {formatEther(totalAmountInvested)}
+                                            <span className="text-sm"> {nativeCurrency}</span>
                                         </p>
                                     </div>
 
-                                    {/* totalAmountWon */}
+                                    {/* Total Won */}
                                     <div>
                                         <p className="text-sm text-gray-400">Total Won</p>
                                         <p className="text-2xl font-bold text-green-500">
-                                            {formatEther(playerStats?.[4] ?? BigInt(0))}
-                                            <span className="text-sm"> POL</span>
+                                            {formatEther(totalAmountWon)}
+                                            <span className="text-sm"> {nativeCurrency}</span>
                                         </p>
                                     </div>
 
-                                    {/* Net Gains / Losses */}
+                                    {/* Net Gain/Loss */}
                                     <div>
                                         <p className="text-sm text-gray-400">Net Gain/Loss</p>
                                         <p
-                                            className={`text-2xl font-bold ${(playerStats?.[4] ?? BigInt(0)) >
-                                                (playerStats?.[5] ?? BigInt(0))
-                                                ? "text-green-500"
-                                                : "text-red-500"
+                                            className={`text-2xl font-bold ${netGains > BigInt(0) ? "text-green-500" : "text-red-500"
                                                 }`}
                                         >
-                                            {parseFloat(
-                                                formatEther(
-                                                    (playerStats?.[4] ?? BigInt(0)) -
-                                                    (playerStats?.[5] ?? BigInt(0))
-                                                )
-                                            ).toFixed(2)}
-                                            <span className="text-sm"> POL</span>
+                                            {parseFloat(formatEther(netGains)).toFixed(2)}
+                                            <span className="text-sm"> {nativeCurrency}</span>
                                         </p>
                                     </div>
 
-                                    {/* refundBalance */}
+                                    {/* Refund Balance */}
                                     <div className="flex flex-col sm:items-center sm:justify-center md:col-span-6 lg:col-span-1">
                                         <p className="text-sm text-gray-400">Refund Balance</p>
                                         <p className="text-2xl font-bold text-white">
                                             {formatEther(refundAmount)}
-                                            <span className="text-sm"> POL</span>
+                                            <span className="text-sm"> {nativeCurrency}</span>
                                         </p>
                                         {refundAmount > BigInt(0) && (
                                             <button
@@ -417,25 +393,20 @@ export default function MyGames() {
                                                             Bet Amount
                                                         </label>
                                                         <p className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                                                            {formatEther(match.betAmount)} ETH
+                                                            {formatEther(match.betAmount)} {nativeCurrency}
                                                         </p>
                                                     </div>
 
                                                     <div>
                                                         <label className="text-sm text-gray-500 dark:text-gray-400">
-                                                            {match.player1 === address
-                                                                ? "Opponent"
-                                                                : "Creator"}
+                                                            {match.player1 === address ? "Opponent" : "Creator"}
                                                         </label>
                                                         <p className="font-medium text-gray-800 dark:text-gray-200 break-all">
                                                             {match.player1 === address
                                                                 ? match.player2 ===
                                                                     "0x0000000000000000000000000000000000000000"
                                                                     ? "Waiting for player..."
-                                                                    : `${match.player2.slice(
-                                                                        0,
-                                                                        6
-                                                                    )}...${match.player2.slice(-4)}`
+                                                                    : `${match.player2.slice(0, 6)}...${match.player2.slice(-4)}`
                                                                 : match.player1}
                                                         </p>
                                                     </div>
@@ -444,10 +415,10 @@ export default function MyGames() {
                                                         <button
                                                             onClick={() => handleCancelMatch(match.id)}
                                                             className="w-full flex items-center justify-center gap-2 px-4 py-3
-                                bg-gradient-to-r from-blue-500 to-purple-500
-                                hover:from-blue-600 hover:to-purple-600
-                                text-white rounded-lg font-medium transition-all transform hover:-translate-y-0.5
-                                backdrop-blur-lg bg-opacity-30"
+                                 bg-gradient-to-r from-blue-500 to-purple-500
+                                 hover:from-blue-600 hover:to-purple-600
+                                 text-white rounded-lg font-medium transition-all transform hover:-translate-y-0.5
+                                 backdrop-blur-lg bg-opacity-30"
                                                         >
                                                             <XMarkIcon className="h-5 w-5" />
                                                             Cancel
@@ -523,7 +494,7 @@ export default function MyGames() {
                                                                 Bet Amount
                                                             </p>
                                                             <p className="font-semibold text-gray-800 dark:text-gray-200">
-                                                                {formatEther(match.betAmount)} ETH
+                                                                {formatEther(match.betAmount)} {nativeCurrency}
                                                             </p>
                                                         </div>
                                                         <div>
@@ -538,9 +509,7 @@ export default function MyGames() {
                                                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                                                 <span className="block">
                                                                     <strong>Start time:</strong>{" "}
-                                                                    {new Date(
-                                                                        Number(match.startTime) * 1000
-                                                                    ).toLocaleString("en-US", {
+                                                                    {new Date(Number(match.startTime) * 1000).toLocaleString("en-US", {
                                                                         year: "numeric",
                                                                         month: "short",
                                                                         day: "numeric",
@@ -550,9 +519,7 @@ export default function MyGames() {
                                                                 </span>
                                                                 <span className="block">
                                                                     <strong>End time:</strong>{" "}
-                                                                    {new Date(
-                                                                        Number(match.endTime) * 1000
-                                                                    ).toLocaleString("en-US", {
+                                                                    {new Date(Number(match.endTime) * 1000).toLocaleString("en-US", {
                                                                         year: "numeric",
                                                                         month: "short",
                                                                         day: "numeric",

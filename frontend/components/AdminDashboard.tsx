@@ -1,5 +1,9 @@
 import React from 'react';
 import { formatEther } from 'viem';
+import { useChainId } from 'wagmi';
+import { config } from '@/config/wagmi';
+
+
 
 interface AdminDashboardProps {
     currentFeePercent?: { result?: bigint };
@@ -44,6 +48,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     isWithdrawDisabled,
 
 }) => {
+    // Get chain ID
+    const chainId = useChainId();
+    const chain = config.chains.find((c) => c.id === chainId);
+    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
+
     return (
         <div className="min-h-screen pt-40 p-8 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-900 text-white">
             {/* Glowing Background Layer */}
@@ -79,7 +88,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
                     <label className="block mb-2 text-gray-300">Current Minimum Bet Amount</label>
                     <p className="p-2 rounded bg-gray-700 text-white text-center">
-                        {betAmount?.result ? parseFloat(formatEther(betAmount.result)).toFixed(2) : '0.0000'} POL
+                        {betAmount?.result ? parseFloat(formatEther(betAmount.result)).toFixed(2) : '0.0000'} {nativeCurrency}
                     </p>
                     <div className="flex mt-4">
                         <input
@@ -115,7 +124,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
                     <label className="block mb-2 text-gray-300">Collected Fees</label>
                     <p className="p-2 rounded bg-gray-700 text-white text-center">
-                        {collectedFees?.result ? parseFloat(formatEther(collectedFees.result)).toFixed(3) : '0.000'} POL
+                        {collectedFees?.result ? parseFloat(formatEther(collectedFees.result)).toFixed(3) : '0.000'} {nativeCurrency}
                     </p>
                     <div className="mt-4 space-y-2">
                         <input
@@ -128,7 +137,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div className="flex">
                             <input
                                 type="number"
-                                placeholder="Amount (POL)"
+                                placeholder="Amount ({nativeCurrency})"
                                 step="0.01"
                                 value={withdrawAmount}
                                 onChange={(e) => setWithdrawAmount(Number(e.target.value))}
