@@ -219,7 +219,7 @@ const Matches = () => {
 
                 </div>
                 {/* Active Matches */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {activeMatches.length > 0 ? activeMatches.map((match, index) => (
                         <MatchCard
                             key={index}
@@ -245,7 +245,8 @@ const Matches = () => {
                     <h2 className="text-2xl font-bold text-white">Ended matches
                         <span className="ml-2 text-blue-500">{endedMatches.length}</span>
                     </h2>
-                    <div className="max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 p-4 rounded-xl">
+
+                    <div className="max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 no-scrollbar gap-4 rounded-xl">
                         {endedMatches.map((match, index) => (
                             <MatchCard key={index} match={match} onJoin={() => { }} isJoining={false} disableJoin={true} feePercent={feePercent} />
                         ))}

@@ -22,3 +22,31 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Hide scrollbar for the entire page (html/body) */
+html,
+body {
+    /* For older IE and Edge (internal windows for these browsers) */
+    -ms-overflow-style: none;
+    /* For Firefox */
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    /* For Chrome, Safari, Opera */
+    display: none;
+}
+
+/* Hides the scrollbar while keeping scroll functionality */
+.no-scrollbar {
+    -ms-overflow-style: none;
+    /* for Internet Explorer, Edge */
+    scrollbar-width: none;
+    /* for Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+    /* for Chrome, Safari, Opera */
+}

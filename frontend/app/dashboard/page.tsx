@@ -439,7 +439,7 @@ export default function DashBoard() {
                                 Match History
                             </h2>
 
-                            <div className="relative max-h-[390px] overflow-y-auto rounded-lg shadow-lg p-4">
+                            <div className="relative max-h-[390px] overflow-y-auto no-scrollbar rounded-lg shadow-lg p-4">
                                 {endedMatches.length === 0 ? (
                                     <div className="text-center p-4">
                                         <p className="text-lg text-gray-600 dark:text-gray-300">
