@@ -7,20 +7,6 @@ import { RainbowKitProvider, Chain, midnightTheme } from '@rainbow-me/rainbowkit
 import { config } from '@/config/wagmi';
 
 
-const anvil: Chain = {
-    id: 31_337,
-    name: 'Anvil Local',
-    nativeCurrency: {
-        name: 'Anvil',
-        symbol: 'ANVETH',
-        decimals: 18
-    },
-    rpcUrls: {
-        public: { http: ["http://localhost:8545"] },
-        default: { http: ["http://localhost:8545"] }
-    },
-    testnet: true,
-}
 
 const queryClient = new QueryClient();
 

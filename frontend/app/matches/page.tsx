@@ -8,7 +8,7 @@ import { ArrowPathIcon, PlusIcon, FaceFrownIcon } from '@heroicons/react/24/outl
 
 const Matches = () => {
     const { address } = useAccount();
-    const { writeContract, isPending: isCreating } = useWriteContract();
+    const { writeContract } = useWriteContract();
     const [activeMatches, setActiveMatches] = useState<Match[]>([]);
     const [endedMatches, setEndedMatches] = useState<Match[]>([]);
     const [joiningMatchId, setJoiningMatchId] = useState<bigint | null>(null);
@@ -28,8 +28,6 @@ const Matches = () => {
 
     const {
         data,
-        error,
-        isPending
     } = useReadContracts({
         contracts: [
             {
