@@ -1,6 +1,6 @@
-# ChainFlip
+# Chain-Flip
 
-**Chain-Flip** is a decentralized coin flip betting game, leveraging Chainlink VRF for provable randomness. Players can create and join matches, with automatic payout to the winner. 
+**ChainFlip** is a decentralized coin flip betting game, leveraging Chainlink VRF for provable randomness. Players can create and join matches, with automatic payout to the winner. 
 
 ## Features
 
