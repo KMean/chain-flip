@@ -14,17 +14,21 @@
 
 The frontend is built with **Next.js**, **Wagmi** for blockchain interactions and **RainbowKit** for wallet connection.
 
-**Matches**
-- *Create a Match*: Players can create a new coin flip match by selecting a side and setting a bet amount.
-- *Join a Match*: Players can join an existing match taking the opposite side.
-- *Cancel a Match*: Match creators can cancel a match before it starts. If canceled The player can withdraw his funds from the DashBoard.
-**Dashboard**: 
-- *Users can see their Active Matches, Match history with results as well as overall stats.*
-**Leaderboard**:
-- *Displays **top winners** based on winnings.*
-**Admin**
-- The Owner of the contract can set *fee percent*, *minimum bet amount*, *Timeout for Stuck Matches* minutes before Chainlink autoation cancel and refunds. 
-- Withdraw accumulated fees.
+#### **Matches**  
+- 🏆 **Create a Match** – Players can create a new coin flip match by selecting a side and setting a bet amount.  
+- 🔄 **Join a Match** – Players can join an existing match, taking the opposite side.  
+- ❌ **Cancel a Match** – Match creators can cancel a match before it starts. If canceled, the player can withdraw their funds from the **Dashboard**.  
+
+#### **Dashboard**  
+- 📊 **Match Overview** – Users can view their **active matches**, **match history** with results, and overall **stats**.  
+
+#### **Leaderboard**  
+- 🥇 **Top Winners** – Displays the **top players** based on total winnings.  
+
+#### **Admin Panel**  
+- ⚙️ **Contract Owner Controls**:  
+  - Set **fee percent**, **minimum bet amount**, and **timeout for stuck matches** (minutes before Chainlink automation cancels and refunds).  
+  - 💰 **Withdraw accumulated fees**.
 
 
 ## Project Structure
