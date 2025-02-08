@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount, useReadContracts, useWatchContractEvent, useWriteContract } from 'wagmi';
 import { formatEther, parseEther } from 'viem';
-import { CONTRACTS } from '@/config/contracts.config';
+import { CONTRACTS } from '../../config/contracts.config';
 import FlipCoin from '@/components/FlipCoin'; // Import the FlipCoin component
 import { PlayIcon, FaceFrownIcon, DocumentTextIcon, ChartBarIcon, XCircleIcon, TrophyIcon, XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 

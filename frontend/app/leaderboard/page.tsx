@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useReadContract, useReadContracts, useAccount } from 'wagmi';
-import { CONTRACTS } from '@/config/contracts.config';
+import { CONTRACTS } from '../../config/contracts.config';
 
 interface PlayerStats {
     address: string;

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useReadContracts } from 'wagmi';
 import { formatEther } from 'viem';
-import { CONTRACTS } from '@/config/contracts.config';
+import { CONTRACTS } from '../config/contracts.config';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 

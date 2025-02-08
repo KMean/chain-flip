@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAccount, useWriteContract, useReadContracts, useReadContract, useWatchContractEvent } from 'wagmi';
 import { parseEther } from 'viem';
 import MatchCard, { Match } from '@/components/MatchCard';
-import { CONTRACTS } from '@/config/contracts.config';
+import { CONTRACTS } from '../../config/contracts.config';
 import { ArrowPathIcon, PlusIcon, FaceFrownIcon } from '@heroicons/react/24/outline';
 
 const Matches = () => {
