@@ -12,7 +12,7 @@
 
 ## **Frontend Features**
 
-The frontend is built with **Next.js** and uses **Wagmi** for blockchain interactions. The UI allows users to:
+The frontend is built with **Next.js** and uses **Wagmi** for blockchain interactions.
 
 - **Matches**
 - *Create a Match*: Players can create a new coin flip match by selecting a side and setting a bet amount.
