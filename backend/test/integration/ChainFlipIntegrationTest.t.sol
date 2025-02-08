@@ -44,7 +44,7 @@ contract CoinFlipIntegrationTest is CodeConstants, Test {
     event TimeOutUpdated(uint256 newTimeOut);
 
     /*//////////////////////////////////////////////////////////////
-                               MODIFIERS
+                            MODIFIERS & HELPERS
     //////////////////////////////////////////////////////////////*/
     modifier createMatch() {
         vm.prank(PLAYER1);
@@ -188,5 +188,89 @@ contract CoinFlipIntegrationTest is CodeConstants, Test {
         assertEq(uint256(matchData.state), uint256(ChainFlip.MatchState.CANCELED));
         assertEq(chainflip.getRefunds(PLAYER1), minimumBetAmount);
         assertEq(chainflip.getRefunds(PLAYER2), minimumBetAmount);
+    }
+
+    function testClaimPrizeFlow() public {
+        RejectingWinner rejectingWinner = new RejectingWinner(address(chainflip));
+        vm.deal(address(rejectingWinner), STARTING_PLAYER_BALANCE);
+
+        // 2) Player1 creates the match
+        vm.prank(PLAYER1);
+        chainflip.createMatch{value: minimumBetAmount}(true); // heads
+
+        // 3) RejectingWinner joins as player2
+        vm.prank(address(rejectingWinner));
+        chainflip.joinMatch{value: minimumBetAmount}(1);
+
+        // Retrieve the match data to get the requestId for VRF
+        ChainFlip.Match memory matchData = chainflip.getMatch(1);
+        uint256 requestId = matchData.vrfRequestId;
+
+        // We want the rejectingWinner to be the *actual* winner, so we force an odd outcome (tails)
+        // since matchData.player1Choice == true => heads => we want the opposite
+        uint256[] memory randomWords = new uint256[](1);
+        // Example: if randomWords[0] % 2 == 1 => tails => the second player wins
+        randomWords[0] = 1;
+
+        // 4) Fulfill VRF with an override to ensure rejectingWinner wins
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWordsWithOverride(
+            requestId, address(chainflip), randomWords
+        );
+
+        // 5) Verify the match ended with rejectingWinner as the winner
+        matchData = chainflip.getMatch(1);
+        assertEq(matchData.winner, address(rejectingWinner), "RejectingWinner should be the winner");
+        assertEq(uint256(matchData.state), uint256(ChainFlip.MatchState.ENDED), "Match should be ENDED");
+
+        // 6) Check that prize was NOT transferred (due to the contract refusing ETH)
+        // and thus ended up in unclaimedPrizes
+        uint256 expectedPrize = (2 * minimumBetAmount) - ((2 * minimumBetAmount) * chainflip.getFeePercent() / 100);
+        uint256 unclaimed = chainflip.unclaimedPrizes(address(rejectingWinner));
+        assertEq(unclaimed, expectedPrize, "Prize should be in unclaimedPrizes due to failed transfer");
+
+        // 7) Let the RejectingWinner contract accept ETH now and call `claimPrize()`
+        //    Because by default it rejects, we have a special function to allow it to receive.
+        rejectingWinner.allowReceiveETH(true);
+
+        // 8) Claim the unclaimed prize
+        vm.prank(address(rejectingWinner));
+        chainflip.claimPrize();
+
+        // 9) Now unclaimedPrizes should be zero, verifying a successful manual claim
+        uint256 unclaimedAfter = chainflip.unclaimedPrizes(address(rejectingWinner));
+        assertEq(unclaimedAfter, 0, "RejectingWinner should have claimed the prize");
+    }
+}
+
+/**
+ * @dev Minimal contract that rejects ETH by default.
+ *      If `allowReceiveETH` is set to true, it accepts ETH.
+ *      We'll use it to test "failed" prize transfers in ChainFlip.
+ */
+contract RejectingWinner {
+    ChainFlip public chainflip;
+    bool private allowReceive = false; // Controls whether ETH can be accepted
+
+    constructor(address _chainflip) {
+        chainflip = ChainFlip(payable(_chainflip));
+    }
+
+    // Reject ETH transfers unless explicitly allowed
+    receive() external payable {
+        if (allowReceive) {
+            return;
+        }
+        require(allowReceive, "ETH transfers not accepted");
+    }
+
+    // Function to manually call claimPrize() in ChainFlip
+    function callClaimFunction() external {
+        allowReceive = true; // Temporarily allow ETH transfers
+        chainflip.claimPrize();
+        allowReceive = false; // Revert back to rejecting transfers
+    }
+
+    function allowReceiveETH(bool choice) external {
+        allowReceive = choice;
     }
 }

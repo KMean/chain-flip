@@ -7,7 +7,7 @@ import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/autom
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
- * @title CoinFlip
+ * @title ChainFlip
  * @author Kim Ranzani - KMean
  * @dev A decentralized coin flip betting game using Chainlink VRF for randomness.
  *      Players can create and join matches, and winnings are automatically paid out.

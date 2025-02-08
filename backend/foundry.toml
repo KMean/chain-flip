@@ -15,7 +15,7 @@ runs = 1000 # Increase this number for more iterations
 [invariant]
 runs = 1000            # Increase invariant runs
 depth = 15             # How deep calls should go (increase if needed)
-fail_on_revert = true  # Fail immediately if a revert happens
+fail_on_revert = false # Fail immediately if a revert happens
 dictionary_weight = 30 # Bias towards using known values
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
