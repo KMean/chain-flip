@@ -32,9 +32,9 @@ export default function Leaderboard() {
 
     // Get chain ID
     const chainId = useChainId();
-    // Choose the contract address based on chainId
 
-    let chainFlipContractAddress;// = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+    // Choose the contract address based on chainId
+    let chainFlipContractAddress;
 
     if (chainId === SepoliaChainId) {
         chainFlipContractAddress = CONTRACTS.chainFlip.sepolia;
@@ -43,18 +43,15 @@ export default function Leaderboard() {
     } else {
         chainFlipContractAddress = CONTRACTS.chainFlip.amoy;
     }
-    // Get native currency symbol
-    const chain = config.chains.find((c) => c.id === chainId);
 
-
-    // 1. getCurrentMatchId
+    // getCurrentMatchId
     const { data: currentMatchId } = useReadContract({
         address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: "getCurrentMatchId",
     });
 
-    // 2. Build array of read calls
+    // Build array of read calls
     const matchCount = Number(currentMatchId || 0);
     const matchContracts = Array.from({ length: matchCount }, (_, i) => ({
         address: chainFlipContractAddress,
@@ -63,7 +60,7 @@ export default function Leaderboard() {
         args: [BigInt(i + 1)],
     }));
 
-    // 3. Do the read
+    // Do the read
     const { data: matchesData } = useReadContracts<WagmiReadContractsItem[]>({
         contracts: matchContracts,
         query: {

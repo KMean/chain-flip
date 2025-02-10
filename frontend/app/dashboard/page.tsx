@@ -52,7 +52,7 @@ interface MatchResult {
 }
 
 const SepoliaChainId = 11155111;
-const BnbTestnetChainId = 97; // Add the correct chain ID for BNB Testnet
+const BnbTestnetChainId = 97;
 
 export default function DashBoard() {
     const { address } = useAccount();
@@ -66,7 +66,7 @@ export default function DashBoard() {
     const chainId = useChainId();
 
     // Choose the contract address based on chainId
-    let chainFlipContractAddress;// = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+    let chainFlipContractAddress;
 
     if (chainId === SepoliaChainId) {
         chainFlipContractAddress = CONTRACTS.chainFlip.sepolia;

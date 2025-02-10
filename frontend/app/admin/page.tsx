@@ -27,8 +27,9 @@ const AdminPage = () => {
 
     // Get chain ID
     const chainId = useChainId();
+
     // Choose the contract address based on chainId
-    let chainFlipContractAddress;// = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+    let chainFlipContractAddress;
 
     if (chainId === SepoliaChainId) {
         chainFlipContractAddress = CONTRACTS.chainFlip.sepolia;
@@ -37,10 +38,6 @@ const AdminPage = () => {
     } else {
         chainFlipContractAddress = CONTRACTS.chainFlip.amoy;
     }
-    // Get native currency symbol
-    const chain = config.chains.find((c) => c.id === chainId);
-
-
 
     // Reading from multiple contract functions
     const { data, refetch } = useReadContracts({

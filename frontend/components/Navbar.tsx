@@ -14,6 +14,7 @@ const Navbar = () => {
     const { address } = useAccount();
     const [isOwner, setIsOwner] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+
     // Default theme is "dark" if no value exists in localStorage
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         if (typeof window !== "undefined") {
@@ -25,7 +26,7 @@ const Navbar = () => {
     // Get chain ID
     const chainId = useChainId();
     const chainFlipContractAddress = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
-    const chain = config.chains.find((c) => c.id === chainId);
+
 
 
     const { data: ownerAddress } = useReadContract({
