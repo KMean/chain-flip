@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useReadContract, useReadContracts, useAccount, useChainId } from "wagmi";
-import { config } from "../../config/wagmi";
 import { CONTRACTS } from "../../config/contracts.config";
 
 interface Match {

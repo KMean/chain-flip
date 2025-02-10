@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useAccount, useReadContract, useChainId } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { CONTRACTS } from '@/config/contracts.config';
-import { config } from '@/config/wagmi';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 
 const SepoliaChainId = 11155111;
@@ -26,8 +25,6 @@ const Navbar = () => {
     // Get chain ID
     const chainId = useChainId();
     const chainFlipContractAddress = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
-
-
 
     const { data: ownerAddress } = useReadContract({
         address: chainFlipContractAddress,

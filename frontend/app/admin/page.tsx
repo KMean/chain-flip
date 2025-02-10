@@ -7,7 +7,7 @@ import {
     useWatchContractEvent,
     useChainId,
 } from "wagmi";
-import { config } from "@/config/wagmi";
+
 import { CONTRACTS } from "@/config/contracts.config";
 import AdminDashboard from "@/components/AdminDashboard";
 
