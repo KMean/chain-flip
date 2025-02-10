@@ -39,7 +39,7 @@ const AdminPage = () => {
     }
     // Get native currency symbol
     const chain = config.chains.find((c) => c.id === chainId);
-    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
+
 
 
     // Reading from multiple contract functions

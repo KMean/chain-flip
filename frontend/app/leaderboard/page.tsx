@@ -45,7 +45,7 @@ export default function Leaderboard() {
     }
     // Get native currency symbol
     const chain = config.chains.find((c) => c.id === chainId);
-    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
+
 
     // 1. getCurrentMatchId
     const { data: currentMatchId } = useReadContract({

@@ -26,7 +26,7 @@ const Navbar = () => {
     const chainId = useChainId();
     const chainFlipContractAddress = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
     const chain = config.chains.find((c) => c.id === chainId);
-    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???";
+
 
     const { data: ownerAddress } = useReadContract({
         address: chainFlipContractAddress,
