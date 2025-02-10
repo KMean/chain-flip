@@ -167,9 +167,13 @@ const AdminPage = () => {
                 ],
             },
             {
-                onError(error: any) {
+                onError(error: unknown) {
                     toast.dismiss(toastId);
-                    toast.error(`Error withdrawing fees: ${error?.message || "Unknown error"}`);
+                    if (error instanceof Error) {
+                        toast.error(`Error withdrawing fees: ${error.message}`);
+                    } else {
+                        toast.error("Error withdrawing fees: Unknown error");
+                    }
                 },
                 onSettled() {
                     // Do not dismiss the toast here; wait for the FeesWithdrawn event.
