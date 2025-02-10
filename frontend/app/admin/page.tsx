@@ -1,12 +1,18 @@
 "use client";
 import React, { useState } from "react";
+import { toast } from 'react-hot-toast';
 import {
     useWriteContract,
     useReadContracts,
     useWatchContractEvent,
+    useChainId,
 } from "wagmi";
+import { config } from "@/config/wagmi";
 import { CONTRACTS } from "@/config/contracts.config";
 import AdminDashboard from "@/components/AdminDashboard";
+
+const SepoliaChainId = 11155111;
+const BnbTestnetChainId = 97;
 
 const AdminPage = () => {
     // ---------------------------
@@ -19,28 +25,43 @@ const AdminPage = () => {
     const [recipient, setRecipient] = useState("");
     const [withdrawAmount, setWithdrawAmount] = useState(0);
 
+    // Get chain ID
+    const chainId = useChainId();
+    // Choose the contract address based on chainId
+    let chainFlipContractAddress;// = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+
+    if (chainId === SepoliaChainId) {
+        chainFlipContractAddress = CONTRACTS.chainFlip.sepolia;
+    } else if (chainId === BnbTestnetChainId) {
+        chainFlipContractAddress = CONTRACTS.chainFlip.bnbtestnet;
+    } else {
+        chainFlipContractAddress = CONTRACTS.chainFlip.amoy;
+    }
+    // Get native currency symbol
+    const chain = config.chains.find((c) => c.id === chainId);
+    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
 
 
     // Reading from multiple contract functions
     const { data, refetch } = useReadContracts({
         contracts: [
             {
-                address: CONTRACTS.chainFlip.address,
+                address: chainFlipContractAddress,
                 abi: CONTRACTS.chainFlip.abi,
                 functionName: "getCollectedFees"
             },
             {
-                address: CONTRACTS.chainFlip.address,
+                address: chainFlipContractAddress,
                 abi: CONTRACTS.chainFlip.abi,
                 functionName: "getCurrentMatchId"
             },
             {
-                address: CONTRACTS.chainFlip.address,
+                address: chainFlipContractAddress,
                 abi: CONTRACTS.chainFlip.abi,
                 functionName: "getFeePercent"
             },
             {
-                address: CONTRACTS.chainFlip.address,
+                address: chainFlipContractAddress,
                 abi: CONTRACTS.chainFlip.abi,
                 functionName: "getMinimumBetAmount"
             }
@@ -57,20 +78,23 @@ const AdminPage = () => {
     const betAmount = data?.[3] as ContractResult;
 
     // ---------------------------
-    // 1) Watch for each event at top-level
+    // Watch for each event at top-level
     // ---------------------------
+
+    // Set up event watcher to detect when fees are withdrawn
     useWatchContractEvent({
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         eventName: "FeesWithdrawn",
         onLogs: async () => {
-            console.log("Event: FeesWithdrawn => refetching...");
+            toast.dismiss();
+            toast.success("Fees withdrawn successfully!");
             await refetch();
-        }
+        },
     });
 
     useWatchContractEvent({
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         eventName: "MinimumBetAmountUpdated",
         onLogs: async () => {
@@ -80,7 +104,7 @@ const AdminPage = () => {
     });
 
     useWatchContractEvent({
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         eventName: "FeeUpdated",
         onLogs: async () => {
@@ -90,7 +114,7 @@ const AdminPage = () => {
     });
 
     useWatchContractEvent({
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         eventName: "TimeOutUpdated",
         onLogs: async () => {
@@ -104,7 +128,7 @@ const AdminPage = () => {
     // ---------------------------
     const handleSetFee = async () => {
         await writeContract({
-            address: CONTRACTS.chainFlip.address,
+            address: chainFlipContractAddress,
             abi: CONTRACTS.chainFlip.abi,
             functionName: "setFeePercent",
             args: [BigInt(feePercent)]
@@ -113,7 +137,7 @@ const AdminPage = () => {
 
     const handleSetMinBet = async () => {
         await writeContract({
-            address: CONTRACTS.chainFlip.address,
+            address: chainFlipContractAddress,
             abi: CONTRACTS.chainFlip.abi,
             functionName: "setMinimumBetAmount",
             args: [BigInt(minBetAmount * 1e18)]
@@ -122,7 +146,7 @@ const AdminPage = () => {
 
     const handleSetTimeout = async () => {
         await writeContract({
-            address: CONTRACTS.chainFlip.address,
+            address: chainFlipContractAddress,
             abi: CONTRACTS.chainFlip.abi,
             functionName: "setTimeOutForStuckMatches",
             args: [BigInt(timeout)]
@@ -131,15 +155,30 @@ const AdminPage = () => {
 
     const handleWithdrawFees = async () => {
         if (isWithdrawDisabled) return;
-        await writeContract({
-            address: CONTRACTS.chainFlip.address,
-            abi: CONTRACTS.chainFlip.abi,
-            functionName: "withdrawFees",
-            args: [
-                `0x${recipient.replace(/^0x/, "")}`,
-                BigInt(withdrawAmount * 1e18)
-            ]
-        });
+
+        const toastId = toast.loading("Withdrawing fees...");
+
+        // This call will trigger the MetaMask prompt. It returns void.
+        writeContract(
+            {
+                address: chainFlipContractAddress,
+                abi: CONTRACTS.chainFlip.abi,
+                functionName: "withdrawFees",
+                args: [
+                    `0x${recipient.replace(/^0x/, "")}`,
+                    BigInt(withdrawAmount * 1e18),
+                ],
+            },
+            {
+                onError(error: any) {
+                    toast.dismiss(toastId);
+                    toast.error(`Error withdrawing fees: ${error?.message || "Unknown error"}`);
+                },
+                onSettled() {
+                    // Do not dismiss the toast here; wait for the FeesWithdrawn event.
+                },
+            }
+        );
     };
 
     // If no collected fees, disable the withdraw

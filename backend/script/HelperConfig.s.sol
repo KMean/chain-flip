@@ -12,7 +12,9 @@ abstract contract CodeConstants {
     address public FOUNDRY_DEFAULT_SENDER = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
     int256 public MOCK_WEI_PER_UNIT_LINK = 7e15; // LINK/ETH Price
     uint256 public constant AMOY_CHAIN_ID = 80002;
+    uint256 public constant SEPOLIA_CHAIN_ID = 11155111;
     uint256 public constant LOCAL_CHAIN_ID = 31337;
+    uint256 public constant BNB_TESTNET_CHAIN_ID = 97;
 }
 
 contract HelperConfig is CodeConstants, Script {
@@ -33,6 +35,8 @@ contract HelperConfig is CodeConstants, Script {
 
     constructor() {
         chainIdToNetworkConfig[AMOY_CHAIN_ID] = getAmoyConfig();
+        chainIdToNetworkConfig[SEPOLIA_CHAIN_ID] = getSepoliaConfig();
+        chainIdToNetworkConfig[BNB_TESTNET_CHAIN_ID] = getBNBTestnetConfig();
     }
 
     function getConfigByChainId(uint256 chainId) public returns (NetworkConfig memory) {
@@ -49,18 +53,6 @@ contract HelperConfig is CodeConstants, Script {
         return getConfigByChainId(block.chainid);
     }
 
-    function getETHMainetConfig() public pure returns (NetworkConfig memory) {
-        return NetworkConfig({
-            minimumBetAmount: 0.01 ether,
-            vrfCoordinator: 0xD7f86b4b8Cae7D942340FF628F82735b7a20893a,
-            keyHash: 0x3fd2fec10d06ee8f65e7f2e95f5c56511359ece3f33960ad8a866ae24a8ff10b, //500 gwei keyhash
-            subscriptionId: 0, //change this
-            callbackGasLimit: 500000,
-            linkToken: 0x514910771AF9Ca656af840dff83E8264EcF986CA,
-            account: 0xc6CD8842EB67684a763Fe776843f693bB3e48850
-        });
-    }
-
     function getAmoyConfig() public view returns (NetworkConfig memory) {
         // Load from .env
         uint256 chainlinkVrfAmoySubscriptionId = vm.envUint("CHAINLINK_VRF_AMOY_SUBSCRIPTION_ID");
@@ -71,8 +63,40 @@ contract HelperConfig is CodeConstants, Script {
             vrfCoordinator: 0x343300b5d84D444B2ADc9116FEF1bED02BE49Cf2,
             keyHash: 0x816bedba8a50b294e5cbd47842baf240c2385f2eaf719edbd4f250a137a8c899,
             subscriptionId: chainlinkVrfAmoySubscriptionId,
-            callbackGasLimit: 500000,
+            callbackGasLimit: 500000, // max 500_000
             linkToken: 0x0Fd9e8d3aF1aaee056EB9e802c3A762a667b1904,
+            account: account
+        });
+    }
+
+    function getSepoliaConfig() public view returns (NetworkConfig memory) {
+        // Load from .env
+        uint256 chainlinkVrfSepoliaSubscriptionId = vm.envUint("CHAINLINK_VRF_SEPOLIA_SUBSCRIPTION_ID");
+        address account = vm.envAddress("ACCOUNT");
+
+        return NetworkConfig({
+            minimumBetAmount: 0.001 ether,
+            vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
+            keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
+            subscriptionId: chainlinkVrfSepoliaSubscriptionId,
+            callbackGasLimit: 1000000, //max 2_500_000
+            linkToken: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+            account: account
+        });
+    }
+
+    function getBNBTestnetConfig() public view returns (NetworkConfig memory) {
+        // Load from .env
+        uint256 chainlinkVrfBnbTestnetSubscriptionId = vm.envUint("CHAINLINK_VRF_BNBTESTNET_SUBSCRIPTION_ID");
+        address account = vm.envAddress("ACCOUNT");
+
+        return NetworkConfig({
+            minimumBetAmount: 0.005 ether,
+            vrfCoordinator: 0xDA3b641D438362C440Ac5458c57e00a712b66700,
+            keyHash: 0x8596b430971ac45bdf6088665b9ad8e8630c9d5049ab54b14dff711bee7c0e26,
+            subscriptionId: chainlinkVrfBnbTestnetSubscriptionId,
+            callbackGasLimit: 1000000, //max 2_500_000
+            linkToken: 0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06,
             account: account
         });
     }

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useReadContract, useReadContracts, useAccount } from "wagmi";
+import { useReadContract, useReadContracts, useAccount, useChainId } from "wagmi";
+import { config } from "../../config/wagmi";
 import { CONTRACTS } from "../../config/contracts.config";
 
 interface Match {
@@ -8,6 +9,9 @@ interface Match {
     state: number;
     winner: `0x${string}`;
 }
+
+const SepoliaChainId = 11155111;
+const BnbTestnetChainId = 97;
 
 export default function Leaderboard() {
     const { address: connectedAddress } = useAccount();
@@ -26,9 +30,26 @@ export default function Leaderboard() {
 
     const [leaderboard, setLeaderboard] = useState<PlayerStats[]>([]);
 
+    // Get chain ID
+    const chainId = useChainId();
+    // Choose the contract address based on chainId
+
+    let chainFlipContractAddress;// = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+
+    if (chainId === SepoliaChainId) {
+        chainFlipContractAddress = CONTRACTS.chainFlip.sepolia;
+    } else if (chainId === BnbTestnetChainId) {
+        chainFlipContractAddress = CONTRACTS.chainFlip.bnbtestnet;
+    } else {
+        chainFlipContractAddress = CONTRACTS.chainFlip.amoy;
+    }
+    // Get native currency symbol
+    const chain = config.chains.find((c) => c.id === chainId);
+    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
+
     // 1. getCurrentMatchId
     const { data: currentMatchId } = useReadContract({
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: "getCurrentMatchId",
     });
@@ -36,7 +57,7 @@ export default function Leaderboard() {
     // 2. Build array of read calls
     const matchCount = Number(currentMatchId || 0);
     const matchContracts = Array.from({ length: matchCount }, (_, i) => ({
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: "getMatch",
         args: [BigInt(i + 1)],
@@ -79,17 +100,17 @@ export default function Leaderboard() {
     }, [matchesData]);
 
     return (
-        <div className="min-h-screen pt-40 p-8 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-900 text-white">
+        <div className="pt-40 relative min-h-screen bg-gradient-to-br from-blue-100 to-purple-900 dark:from-gray-900 dark:to-gray-900 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute -top-40 left-1/2 w-[600px] h-[600px] bg-purple-500 opacity-20 blur-[160px]" />
                 <div className="absolute top-40 right-1/3 w-[400px] h-[400px] bg-blue-500 opacity-20 blur-[140px]" />
             </div>
 
-            <h1 className="text-3xl font-bold text-center mb-8">Leaderboard</h1>
+            <h1 className="text-3xl font-bold text-center mb-8 dark:text-white">Leaderboard</h1>
 
             {leaderboard.length > 0 ? (
-                <div className="overflow-x-auto shadow-md rounded-lg">
-                    <table className="min-w-full bg-gray-800 border border-gray-700">
+                <div className="overflow-x-auto shadow-md rounded-lg m-20">
+                    <table className="min-w-full dark:bg-gray-800 dark:border dark:border-gray-700">
                         <thead>
                             <tr className="bg-gray-700 text-left">
                                 <th className="py-3 px-6">Rank</th>
@@ -106,8 +127,8 @@ export default function Leaderboard() {
                                     <tr
                                         key={player.address}
                                         className={`border-t border-gray-700 ${isCurrentUser
-                                                ? "bg-blue-900 text-white font-bold"
-                                                : "text-gray-300"
+                                            ? "bg-blue-900 dark:text-white font-bold"
+                                            : "dark:text-gray-300 border"
                                             }`}
                                     >
                                         <td className="py-3 px-6">{index + 1}</td>

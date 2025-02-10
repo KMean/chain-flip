@@ -1,33 +1,54 @@
 'use client';
 
 import React from 'react';
-import { useReadContracts } from 'wagmi';
+import { useReadContracts, useChainId } from 'wagmi';
 import { formatEther } from 'viem';
 import { CONTRACTS } from '../config/contracts.config';
+import { config } from '../config/wagmi';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
+const SepoliaChainId = 11155111;
+const BnbTestnetChainId = 97;
+
 export default function Home() {
+
+  // Get chain ID
+  const chainId = useChainId();
+  // Choose the contract address based on chainId
+  let chainFlipContractAddress;// = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+
+  if (chainId === SepoliaChainId) {
+    chainFlipContractAddress = CONTRACTS.chainFlip.sepolia;
+  } else if (chainId === BnbTestnetChainId) {
+    chainFlipContractAddress = CONTRACTS.chainFlip.bnbtestnet;
+  } else {
+    chainFlipContractAddress = CONTRACTS.chainFlip.amoy;
+  }
+  // Get native currency symbol
+  const chain = config.chains.find((c) => c.id === chainId);
+  const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
+
   // Fetch contract data
   const { data, isLoading, error } = useReadContracts({
     contracts: [
       {
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: 'getCurrentMatchId', // Fetch total matches played
       },
       {
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: 'getTotalWinnings', // Fetch total winnings
       },
       {
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: 'getFeePercent', // Fetch current fee percentage
       },
       {
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: 'getMinimumBetAmount', // Fetch minimum bet amount
       },
@@ -89,7 +110,7 @@ export default function Home() {
             ) : error ? (
               <p className="text-3xl font-semibold text-red-400">Error</p>
             ) : (
-              <p className="text-3xl font-semibold text-green-400">{parseFloat(totalWinnings).toFixed(2)}<span className='text-sm'> POL</span></p>
+              <p className="text-3xl font-semibold text-green-400">{parseFloat(totalWinnings).toFixed(2)}<span className='text-sm'> {nativeCurrency}</span></p>
             )}
           </div>
 
@@ -113,7 +134,7 @@ export default function Home() {
             ) : error ? (
               <p className="text-3xl font-semibold text-red-400">Error</p>
             ) : (
-              <p className="text-3xl font-semibold text-yellow-400">{minBetAmount}<span className='text-sm'> POL</span></p>
+              <p className="text-3xl font-semibold text-yellow-400">{minBetAmount}<span className='text-sm'> {nativeCurrency}</span></p>
             )}
           </div>
         </div>

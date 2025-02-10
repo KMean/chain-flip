@@ -3,6 +3,7 @@ import { http } from 'wagmi';
 import {
     sepolia,
     polygonAmoy,
+    bscTestnet,
     anvil
 } from 'wagmi/chains';
 
@@ -13,11 +14,13 @@ export const config = getDefaultConfig({
     chains: [
         polygonAmoy,
         sepolia,
+        bscTestnet,
         anvil
     ],
     transports: {
-        [polygonAmoy.id]: http(process.env.NEXT_PUBLIC_ALCHEMY_API_URL!),
-        [sepolia.id]: http(),
+        [polygonAmoy.id]: http(process.env.NEXT_PUBLIC_AMOY_ALCHEMY_API_URL!),
+        [sepolia.id]: http(process.env.NEXT_PUBLIC_SEPOLIA_ALCHEMY_API_URL!),
+        [bscTestnet.id]: http(process.env.NEXT_PUBLIC_BNBTESTNET_ALCHEMY_API_URL!),
         [anvil.id]: http()
     },
     ssr: true,

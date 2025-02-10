@@ -20,8 +20,14 @@ dictionary_weight = 30 # Bias towards using known values
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 
+# used to deploy contracts
 [rpc_endpoints]
 amoy = "${AMOY_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
+bnbtestnet = "${BNBTESTNET_RPC_URL}"
 
+# used to verify contracts on polygon and ethereum
 [etherscan]
 amoy = { key = "${POLYGON_SCAN_API_KEY}" }
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+bnbtestnet = { key = "${BSCSCAN_API_KEY}" }

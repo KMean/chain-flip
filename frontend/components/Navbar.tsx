@@ -2,17 +2,34 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAccount, useReadContract } from 'wagmi';
+import { useAccount, useReadContract, useChainId } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { CONTRACTS } from '@/config/contracts.config';
+import { config } from '@/config/wagmi';
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+
+const SepoliaChainId = 11155111;
 
 const Navbar = () => {
     const { address } = useAccount();
     const [isOwner, setIsOwner] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    // Default theme is "dark" if no value exists in localStorage
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+        if (typeof window !== "undefined") {
+            return (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
+        }
+        return 'dark';
+    });
+
+    // Get chain ID
+    const chainId = useChainId();
+    const chainFlipContractAddress = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+    const chain = config.chains.find((c) => c.id === chainId);
+    const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???";
 
     const { data: ownerAddress } = useReadContract({
-        address: CONTRACTS.chainFlip.address,
+        address: chainFlipContractAddress,
         abi: CONTRACTS.chainFlip.abi,
         functionName: 'owner',
     });
@@ -25,11 +42,21 @@ const Navbar = () => {
         }
     }, [ownerAddress, address]);
 
+    // Theme Toggle Handler
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+            localStorage.setItem('theme', theme);
+        }
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    };
+
     return (
-        <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900 bg-opacity-0 backdrop-blur-md p-4 text-white">
-            {/* Top row: Logo + Desktop Nav + Hamburger */}
+        <nav className="fixed top-0 left-0 w-full z-50 bg-white/10 dark:bg-gray-900/10 backdrop-blur-lg p-4 text-gray-900 dark:text-white">
             <div className="flex items-center justify-between">
-                {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
                         src="/chainflip_logo.png"
@@ -40,55 +67,34 @@ const Navbar = () => {
                     />
                 </Link>
 
-                {/* Desktop Nav (hidden on mobile) */}
+                {/* Desktop Navigation */}
                 <div className="hidden lg:flex lg:items-center lg:space-x-6">
-                    <Link
-                        href="/matches"
-                        className="hover:text-gray-300 transition-colors duration-200"
-                    >
-                        Matches
-                    </Link>
-                    <Link
-                        href="/dashboard"
-                        className="hover:text-gray-300 transition-colors duration-200"
-                    >
-                        Dashboard
-                    </Link>
-                    <Link
-                        href="/leaderboard"
-                        className="hover:text-gray-300 transition-colors duration-200"
-                    >
-                        Leader Board
-                    </Link>
-                    {isOwner && (
-                        <Link
-                            href="/admin"
-                            className="hover:text-gray-300 transition-colors duration-200"
-                        >
-                            Admin
-                        </Link>
-                    )}
+                    <Link href="/matches" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Matches</Link>
+                    <Link href="/dashboard" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Dashboard</Link>
+                    <Link href="/leaderboard" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Leader Board</Link>
+                    {isOwner && <Link href="/admin" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Admin</Link>}
 
-                    {/* Desktop Connect Button */}
+                    {/* Theme Toggle Button */}
+                    <button onClick={toggleTheme} className="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all">
+                        {theme === 'light' ? <MoonIcon className="w-6 h-6" /> : <SunIcon className="w-6 h-6" />}
+                    </button>
+
+                    {/* Connect Button */}
                     <ConnectButton
                         chainStatus="icon"
                         showBalance={false}
-                        accountStatus={{
-                            smallScreen: 'avatar',
-                            largeScreen: 'full',
-                        }}
+                        accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }}
                         label="Connect"
                     />
                 </div>
 
-                {/* Hamburger Button (mobile only) */}
+                {/* Mobile Menu Button */}
                 <div className="lg:hidden">
                     <button
                         onClick={() => setMenuOpen(!menuOpen)}
-                        className="text-white hover:text-gray-300 focus:outline-none"
+                        className="text-gray-900 dark:text-white hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
                     >
-                        {/* Toggle icon between hamburger and "X" */}
-                        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                             {menuOpen ? (
                                 <path
                                     fillRule="evenodd"
@@ -107,51 +113,22 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Menu (hidden on desktop) */}
+            {/* Mobile Menu */}
             <div className={`${menuOpen ? 'block' : 'hidden'} lg:hidden mt-4`}>
                 <div className="flex flex-col space-y-2">
-                    <Link
-                        href="/matches"
-                        onClick={() => setMenuOpen(false)}
-                        className="hover:text-gray-300 transition-colors duration-200"
-                    >
-                        Matches
-                    </Link>
-                    <Link
-                        href="/dashboard"
-                        onClick={() => setMenuOpen(false)}
-                        className="hover:text-gray-300 transition-colors duration-200"
-                    >
-                        Dashboard
-                    </Link>
-                    <Link
-                        href="/leaderboard"
-                        onClick={() => setMenuOpen(false)}
-                        className="hover:text-gray-300 transition-colors duration-200"
-                    >
-                        Leader Board
-                    </Link>
-                    {isOwner && (
-                        <Link
-                            href="/admin"
-                            onClick={() => setMenuOpen(false)}
-                            className="hover:text-gray-300 transition-colors duration-200"
-                        >
-                            Admin
-                        </Link>
-                    )}
+                    <Link href="/matches" onClick={() => setMenuOpen(false)} className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Matches</Link>
+                    <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Dashboard</Link>
+                    <Link href="/leaderboard" onClick={() => setMenuOpen(false)} className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Leader Board</Link>
+                    {isOwner && <Link href="/admin" onClick={() => setMenuOpen(false)} className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Admin</Link>}
 
-                    {/* Mobile Connect Button */}
+                    {/* Theme Toggle in Mobile Menu */}
+                    <button onClick={toggleTheme} className="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all">
+                        {theme === 'light' ? <MoonIcon className="w-6 h-6" /> : <SunIcon className="w-6 h-6" />}
+                    </button>
+
+                    {/* Connect Button for Mobile */}
                     <div className="mt-2">
-                        <ConnectButton
-                            chainStatus="icon"
-                            showBalance={false}
-                            accountStatus={{
-                                smallScreen: 'avatar',
-                                largeScreen: 'full',
-                            }}
-                            label="Connect"
-                        />
+                        <ConnectButton chainStatus="icon" showBalance={false} accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }} label="Connect" />
                     </div>
                 </div>
             </div>
