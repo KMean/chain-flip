@@ -80,11 +80,11 @@ export default function Home() {
       <div className="absolute inset-0 bg-blue-900 bg-opacity-10 z-0" />
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col w-[170%] items-center text-center px-6 py-12 backdrop-blur-sm bg-black/50 rounded-xl shadow-xl max-w-2xl">
-        <h1 className="text-4xl font-bold text-white">
+      <div className="relative z-10 flex flex-col w-[85%] lg:w-[40%] md:w-[90%] ipadpro:w-[70%] samsungGalaxyS8:w-[90%] galaxyZFold5:w-[92%] custom:w-[100%] items-center text-center px-30  sm:px-50 py-12 backdrop-blur-sm bg-black/50 rounded-xl shadow-xl">
+        <h1 className="text-2xl lg:text-4xl md:text-4xl font-bold text-white">
           Welcome to <span className="text-blue-400">Chain Fl!p</span>
         </h1>
-        <p className="mt-4 text-lg text-gray-300">
+        <p className="mt-4 text-xs sm:text-sm lg:text-lg md:text-lg text-gray-300">
           Try your luck with the ultimate coin flipping game!
         </p>
 

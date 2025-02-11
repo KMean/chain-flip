@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 
+
 export default {
   darkMode: "class", // ✅ Enable manual dark mode
   content: [
@@ -12,6 +13,12 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+      },
+      screens: {
+        ipadpro: { raw: '(min-width: 1024px) and (max-width: 1366px)' },
+        samsungGalaxyS8: { raw: '(min-width: 360px) and (max-width: 740px)' },
+        galaxyZFold5: { raw: '(min-width: 344px) and (max-width: 882px)' },
+        custom: { raw: '(min-width: 640px) and (max-width: 720px)' },
       },
     },
   },
