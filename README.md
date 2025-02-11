@@ -309,7 +309,7 @@ forge script --chain amoy script/DeployChainFlip.s.sol --rpc-url $AMOY_RPC_URL -
 
 ## Generate ABI With WAGMI
 
-If modifying the contract, regenerate frontend hooks:
+If modifying the contract, regenerate the ABI:
 
 Install [Wagmi CLI](https://wagmi.sh/cli/why) (if not installed)
 
