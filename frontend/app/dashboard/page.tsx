@@ -201,7 +201,7 @@ export default function DashBoard() {
                 args: [matchId],
             },
             {
-                onError: (error) => {
+                onError: () => {
                     toast.dismiss();
                     toast.error("Error canceling match.");
                 },
@@ -224,7 +224,7 @@ export default function DashBoard() {
                 args: [],
             },
             {
-                onError: (error) => {
+                onError: () => {
                     toast.dismiss();
                     toast.error("Error withdrawing refund.");
                 },

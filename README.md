@@ -2,7 +2,7 @@
 
 **ChainFlip** is a decentralized coin flip betting game, leveraging Chainlink VRF for provable randomness. Players can create and join matches, with automatic payout to the winner. 
 
-Try it out at [HERE](https://chainflip.vercel.app)!
+Try it out at [HERE](https://chainflip-pink.vercel.app)!
 ## Features
 
 - **Decentralized Betting**: Fair and transparent coin flip game.
