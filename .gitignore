@@ -5,10 +5,32 @@
 /frontend/.turbo/
 /frontend/.eslintcache
 
-# Build output for backend (Forge)
+# Ignore .env files except example
+/frontend/.env*
+!/frontend/.env.local.example
+
+# Ignore build files for frontend
+/frontend/out/
+/frontend/build/
+
+# Ignore miscellaneous files
+/frontend/.pnp
+/frontend/pnpm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/npm-debug.log*
+/frontend/.pnp.*
+/frontend/.vercel
+/frontend/*.tsbuildinfo
+/frontend/next-env.d.ts
+/frontend/D.S_Store
+/frontend/*.pem
+
+# Dependencies and environment files for backend (Forge)
 backend/cache/
 backend/out/
-
+backend/broadcast/*
+!/backend/broadcast/.gitkeep
 
 # Ignore lib folder but track submodules
 /backend/lib/*
@@ -18,10 +40,6 @@ backend/out/
 !/backend/lib/openzeppelin-contracts
 !/backend/lib/solmate
 !/backend/lib/foundry-devops
-
-# Ignore broadcast logs but keep the folder structure
-/backend/broadcast/*
-!/backend/broadcast/.gitkeep
 
 # General ignores
 .DS_Store
