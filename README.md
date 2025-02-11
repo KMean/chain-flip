@@ -166,7 +166,7 @@ git submodule update --init --recursive
    ```
 3. **Copy environment variables**:
    ```bash
-   cp .env_example .env
+   cp .env.example .env
    ```
 
    Update `AMOY_RPC_URL`, `SEPOLIA_RPC_UR`, `BNBTESTNET_RPC_URL`, `CHAINLINK_VRF_AMOY_SUBSCRIPTION_ID`, `CHAINLINK_VRF_SEPOLIA_SUBSCRIPTION_ID`, `CHAINLINK_VRF_BNBTESTNET_SUBSCRIPTION_ID`, `ACCOUNT`, `POLYGON_SCAN_API_KEY`, `ETHERSCAN_API_KEY`, `BSCSCAN_API_KEY` in `.env`.
@@ -293,7 +293,7 @@ forge script --chain amoy script/DeployChainFlip.s.sol --rpc-url $AMOY_RPC_URL -
    ```
 3. **Copy environment variables**:
    ```bash
-   cp .env.local_example .env.local
+   cp .env.local.example .env.local
    ```
    Update `NEXT_PUBLIC_RAINBOW_PROJECT_ID`, `NEXT_PUBLIC_AMOY_ALCHEMY_API_URL`, `NEXT_PUBLIC_SEPOLIA_ALCHEMY_API_URL`, `NEXT_PUBLIC_BNBTESTNET_ALCHEMY_API_URL`, `NEXT_PUBLIC_AMOY_CHAINFLIP_CONTRACT_ADDRESS`,`NEXT_PUBLIC_SEPOLIA_CHAINFLIP_CONTRACT_ADDRESS`, `NEXT_PUBLIC_BNBTESTNET_CHAINFLIP_CONTRACT_ADDRESS`.
 
