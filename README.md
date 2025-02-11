@@ -307,7 +307,7 @@ forge script --chain amoy script/DeployChainFlip.s.sol --rpc-url $AMOY_RPC_URL -
    ```
    The frontend will be available at [http://localhost:3000](http://localhost:3000/).
 
-## Generate Wagmi Hooks
+## Generate ABI With WAGMI
 
 If modifying the contract, regenerate frontend hooks:
 
