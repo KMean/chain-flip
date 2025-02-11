@@ -306,10 +306,27 @@ forge script --chain amoy script/DeployChainFlip.s.sol --rpc-url $AMOY_RPC_URL -
 ## Generate Wagmi Hooks
 
 If modifying the contract, regenerate frontend hooks:
+
+Install [Wagmi CLI](https://wagmi.sh/cli/why) (if not installed)
+
+Ensure you have Wagmi CLI installed globally:
+```bash
+npm install -g wagmi/cli
+```
+or install it locally in the project:
+
+```bash
+npm install wagmi/cli --save-dev
+```
+
+Generate Hooks
+Run the [generate](https://wagmi.sh/cli/api/commands/generate) command to update the frontend ABI:
 ```bash
 wagmi generate --config frontend/config/wagmiGenerate.config.ts
 ```
-This will update the ABI for the frontend to interact with the contract. The output defaults to `chainflip.ts` inside the same folder, but you can change this setup as needed in `wagmiGenerate.config.ts`. If you do so, remember to update `contracts.config.ts` to extract the correct ABI.
+This will update the contracts ABI so the frontend can interact with the smart contract. By default, the output is saved inside chainflip.ts in the same folder, but you can modify this behavior in wagmiGenerate.config.ts.
+
+⚠️ Important: If you change the output location, update contracts.config.ts to extract the correct ABI.
 
 
 ## License
