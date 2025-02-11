@@ -15,6 +15,9 @@
   <a href="https://nextjs.org/">
     <img src="https://img.shields.io/badge/Frontend-Next.js-blue" alt="Next.js">
   </a>
+  <a href="https://wagmi.sh/">
+    <img src="https://img.shields.io/badge/Web3-Wagmi-blueviolet" alt="Wagmi">
+  </a>
   <a href="https://www.rainbowkit.com/">
     <img src="https://img.shields.io/badge/Wallet-RainbowKit-orange" alt="RainbowKit">
   </a>
@@ -23,6 +26,7 @@
   </a>
   <img src="https://img.shields.io/badge/Coverage-92%25-green" alt="Coverage">
 </p>
+
 
 ---
 
