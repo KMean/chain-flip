@@ -323,8 +323,7 @@ or install it locally in the project:
 npm install wagmi/cli --save-dev
 ```
 
-Generate Hooks
-Run the [generate](https://wagmi.sh/cli/api/commands/generate) command to update the frontend ABI:
+Generate ABI by running the [generate](https://wagmi.sh/cli/api/commands/generate) command to update the frontend ABI:
 ```bash
 wagmi generate --config frontend/config/wagmiGenerate.config.ts
 ```
