@@ -263,6 +263,7 @@ contract ChainFlip is VRFConsumerBaseV2Plus, AutomationCompatibleInterface, Reen
                 // requestRandomWordsAgain(matchId);
 
                 // Option 2: Cancel the match and refund players
+                // For now we just simply cancel the match and refund the players for the sake of simplicity
                 _match.state = MatchState.CANCELED;
                 refunds[_match.player1] += _match.betAmount;
                 refunds[_match.player2] += _match.betAmount;
