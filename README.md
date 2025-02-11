@@ -36,39 +36,64 @@ The frontend is built with **Next.js**, **Wagmi** for blockchain interactions an
 
 ```plaintext
 chain-flip/
-├── backend/                            # Forge project for smart contracts
-│   ├── script/                         # Deployment & interaction scripts (Foundry)
-│   │   ├── DeployChainFlip.s.sol
-│   │   ├── HelperConfig.s.sol
-│   │   └── Interactions.s.sol
-│   ├── src/                            # Solidity contracts
-│   │   └── ChainFlip.sol
-│   ├── foundry.toml                    # Foundry configuration
-│   └── test/                           # Unit, fuzz, integration, and invariant tests
-├── frontend/                           # Next.js project for the user interface
-│   ├── app/                            # App Router folder for Next.js
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   └── providers.tsx
-│   ├── components/                     # Reusable React components
-│   │   ├── AdminDashboard.tsx
-│   │   ├── FlipCoin.tsx
-│   │   ├── MatchCard.tsx
-│   │   └── Navbar.tsx
-│   ├── config/                         # Wagmi & contract configuration
-│   │   ├── chainflip.ts
-│   │   ├── contracts.config.ts
-│   │   ├── wagmi.ts
-│   │   └── wagmiGenerate.config.ts
-│   ├── public/                         # Static assets
-│   │   ├── background.mp4
-│   │   ├── chainflip_logo.png
-│   │   └── coin.png
-│   ├── package.json                    # Frontend dependencies
-│   └── ...other files
-├── README.md                           # Project documentation
-└── .gitignore                          # Git ignore file
+├── README.md                                # Project documentation
+├── backend/                                 # Backend folder for smart contracts using Foundry
+│   ├── foundry.toml                         # Foundry configuration file
+│   ├── script/                              # Scripts for deployment and interaction
+│   │   ├── DeployChainFlip.s.sol            # Deployment script for ChainFlip contract
+│   │   ├── HelperConfig.s.sol               # Helper script for contract configuration
+│   │   └── Interactions.s.sol               # Script for contract interactions
+│   ├── src/                                 # Solidity source files
+│   │   └── ChainFlip.sol                    # Main smart contract for the coin flip game
+│   └── test/                                # Solidity test files
+│       ├── Invariants/                      # Invariant tests (for formal verification)
+│       │   └── ChainFlipInvariantsTest.t.sol
+│       ├── fuzz/                            # Fuzz testing (randomized input tests)
+│       │   └── ChainFlipFuzzTest.t.sol
+│       ├── integration/                     # Integration tests (end-to-end)
+│       │   └── ChainFlipIntegrationTest.t.sol
+│       ├── mocks/                           # Mock contracts for testing
+│       │   └── LinkToken.sol                # Mock Chainlink token contract
+│       └── unit/                            # Unit tests (function-level tests)
+│           └── ChainFlipUnitTest.t.sol
+├── frontend/                                # Frontend folder using Next.js
+│   ├── app/                                 # Next.js App Router
+│   │   ├── admin/                           # Admin dashboard
+│   │   │   └── page.tsx
+│   │   ├── dashboard/                       # User dashboard
+│   │   │   └── page.tsx
+│   │   ├── globals.css                      # Global styles
+│   │   ├── layout.tsx                       # Root layout component
+│   │   ├── leaderboard/                     # Leaderboard page
+│   │   │   └── page.tsx
+│   │   ├── matches/                         # Matches listing page
+│   │   │   └── page.tsx
+│   │   ├── page.tsx                         # Main landing page
+│   │   └── providers.tsx                    # Providers for context/state management
+│   ├── components/                          # Reusable React components
+│   │   ├── AdminDashboard.tsx               # Admin panel component
+│   │   ├── FlipCoin.tsx                     # Coin flip animation component
+│   │   ├── MatchCard.tsx                    # UI card for displaying matches
+│   │   ├── Navbar.tsx                       # Navigation bar component
+│   │   └── css/                             # CSS files
+│   │       └── FlipCoin.css                 # Styles for FlipCoin animation
+│   ├── config/                              # Configuration files
+│   │   ├── chainflip.ts                     # Chain-specific configurations
+│   │   ├── contracts.config.ts              # Smart contract addresses & ABIs
+│   │   ├── wagmi.ts                         # Wagmi configuration for wallet connection
+│   │   └── wagmiGenerate.config.ts          # Auto-generated Wagmi config
+│   ├── eslint.config.mjs                    # ESLint configuration for linting
+│   ├── next-env.d.ts                        # TypeScript environment file for Next.js
+│   ├── next.config.ts                       # Next.js configuration file
+│   ├── package-lock.json                    # Auto-generated lock file for dependencies
+│   ├── package.json                         # Project dependencies and scripts
+│   ├── postcss.config.mjs                   # PostCSS configuration (for Tailwind)
+│   ├── public/                              # Static assets (images, videos, etc.)
+│   │   ├── background.mp4                   # Background animation/video
+│   │   ├── chainflip_logo.png               # Project logo
+│   ├── tailwind.config.ts                   # Tailwind CSS configuration file
+│   └── tsconfig.json                        # TypeScript configuration file
+└──
 ```
 
 ## Getting Started
@@ -145,14 +170,6 @@ forge script --chain amoy script/DeployChainFlip.s.sol --rpc-url $AMOY_RPC_URL -
    cp .env.local_example .env.local
    ```
    Update `NEXT_PUBLIC_RAINBOW_PROJECT_ID`, `NEXT_PUBLIC_AMOY_ALCHEMY_API_URL`, `NEXT_PUBLIC_SEPOLIA_ALCHEMY_API_URL`, `NEXT_PUBLIC_BNBTESTNET_ALCHEMY_API_URL`, `NEXT_PUBLIC_AMOY_CHAINFLIP_CONTRACT_ADDRESS`,`NEXT_PUBLIC_SEPOLIA_CHAINFLIP_CONTRACT_ADDRESS`, `NEXT_PUBLIC_BNBTESTNET_CHAINFLIP_CONTRACT_ADDRESS`.
-
-NEXT_PUBLIC_RAINBOW_PROJECT_ID=685407b1f12a97738322349c5285ba1a
-NEXT_PUBLIC_AMOY_ALCHEMY_API_URL="https://polygon-amoy.g.alchemy.com/v2/uCDPDwl16w_lPfCKI_FLO9Sice6zxurx"
-NEXT_PUBLIC_SEPOLIA_ALCHEMY_API_URL="https://eth-sepolia.g.alchemy.com/v2/uCDPDwl16w_lPfCKI_FLO9Sice6zxurx"
-NEXT_PUBLIC_BNBTESTNET_ALCHEMY_API_URL="https://bnb-testnet.g.alchemy.com/v2/uCDPDwl16w_lPfCKI_FLO9Sice6zxurx"
-NEXT_PUBLIC_AMOY_CHAINFLIP_CONTRACT_ADDRESS=0xC52882e01C5226B6d7d9436dD222236e9324705B
-NEXT_PUBLIC_SEPOLIA_CHAINFLIP_CONTRACT_ADDRESS=0x16DBb1aD83c0236d199E8637c009D561b683bbE2
-NEXT_PUBLIC_BNBTESTNET_CHAINFLIP_CONTRACT_ADDRESS=0x93E2b11cfa055fccB0c672AB7900d2ee391e6420
 
 4. **Start the development server**:
    ```bash

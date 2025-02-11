@@ -105,7 +105,7 @@ export default function Leaderboard() {
             <h1 className="text-3xl font-bold text-center mb-8 text-blue-700 dark:text-white">Leaderboard</h1>
 
             {leaderboard.length > 0 ? (
-                <div className="overflow-x-auto shadow-md rounded-lg m-20">
+                <div className="overflow-x-auto shadow-md rounded-lg lg:m-20">
                     <table className="min-w-full bg-blue-800/20 dark:bg-gray-800 dark:border dark:border-gray-700">
                         <thead>
                             <tr className="bg-blue-900/50 dark:bg-purple-700/50 text-left dark:text-blue-500">
