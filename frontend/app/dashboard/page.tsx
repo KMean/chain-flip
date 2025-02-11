@@ -23,6 +23,8 @@ import {
     ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
+import { toast } from 'react-hot-toast';
+
 // ---- Data Model ----
 interface Match {
     id: bigint;
@@ -61,7 +63,8 @@ export default function DashBoard() {
     const [matches, setMatches] = useState<Match[]>([]);
     const [activeMatches, setActiveMatches] = useState<Match[]>([]);
     const [endedMatches, setEndedMatches] = useState<Match[]>([]);
-
+    const [cancelingMatchId, setCancelingMatchId] = useState<bigint | null>(null);
+    const [withdrawingRefund, setWithdrawingRefund] = useState(false);
     // Get chain ID
     const chainId = useChainId();
 
@@ -188,21 +191,48 @@ export default function DashBoard() {
     // Write functions
     // ---------------------------
     const handleCancelMatch = (matchId: bigint) => {
-        writeContract({
-            address: chainFlipContractAddress,
-            abi: CONTRACTS.chainFlip.abi,
-            functionName: "cancelMatch",
-            args: [matchId],
-        });
+        toast.loading('Canceling match...');
+        setCancelingMatchId(matchId);
+        writeContract(
+            {
+                address: chainFlipContractAddress,
+                abi: CONTRACTS.chainFlip.abi,
+                functionName: "cancelMatch",
+                args: [matchId],
+            },
+            {
+                onError: (error) => {
+                    toast.dismiss();
+                    toast.error("Error canceling match.");
+                },
+                onSettled: () => {
+
+                },
+            }
+        );
     };
 
+
     const handleWithdrawRefund = () => {
-        writeContract({
-            address: chainFlipContractAddress,
-            abi: CONTRACTS.chainFlip.abi,
-            functionName: "withdrawRefund",
-            args: [],
-        });
+        toast.loading('Withdrawing refund...');
+        setWithdrawingRefund(true);
+        writeContract(
+            {
+                address: chainFlipContractAddress,
+                abi: CONTRACTS.chainFlip.abi,
+                functionName: "withdrawRefund",
+                args: [],
+            },
+            {
+                onError: (error) => {
+                    toast.dismiss();
+                    toast.error("Error withdrawing refund.");
+                },
+                onSettled: () => {
+
+                },
+            }
+        );
     };
 
     // ----------------------------------------------------------------
@@ -243,6 +273,9 @@ export default function DashBoard() {
         abi: CONTRACTS.chainFlip.abi,
         eventName: "MatchCanceledByPlayer",
         onLogs: async () => {
+            toast.dismiss();
+            toast.success("Match canceled successfully!");
+            setCancelingMatchId(null);
             await refetch();
             await refetchMatches();
         },
@@ -253,6 +286,9 @@ export default function DashBoard() {
         abi: CONTRACTS.chainFlip.abi,
         eventName: "RefundIssued",
         onLogs: async () => {
+            toast.dismiss();
+            toast.success("Refund withdrawn successfully!");
+            setWithdrawingRefund(false);
             await refetch();
             await refetchMatches();
         },
@@ -295,7 +331,7 @@ export default function DashBoard() {
                     <>
                         {/* Player Stats Section */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-semibold text-gray-00 dark:text-gray-200 mb-6 flex items-center">
+                            <h2 className="text-2xl font-bold text-blue-600 dark:text-gray-200 mb-6 flex items-center">
                                 <ChartBarIcon className="w-6 h-6 text-gray-700 mr-2" />
                                 Player Stats
                             </h2>
@@ -304,37 +340,37 @@ export default function DashBoard() {
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-10 gap-4 text-center">
                                     {/* Total Matches */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Total Matches</p>
+                                        <p className="text-sm dark:text-gray-400">Total Matches</p>
                                         <p className="text-2xl font-bold text-blue-500">{totalMatches}</p>
                                     </div>
 
                                     {/* Total Wins */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Total Wins</p>
+                                        <p className="text-sm dark:text-gray-400">Total Wins</p>
                                         <p className="text-2xl font-bold text-green-500">{totalWins}</p>
                                     </div>
 
                                     {/* Total Losses */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Total Losses</p>
+                                        <p className="text-sm dark:text-gray-400">Total Losses</p>
                                         <p className="text-2xl font-bold text-red-500">{totalLosses}</p>
                                     </div>
 
                                     {/* Total Canceled */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Total Canceled</p>
+                                        <p className="text-sm dark:text-gray-400">Total Canceled</p>
                                         <p className="text-2xl font-bold text-yellow-500">{totalCanceled}</p>
                                     </div>
 
                                     {/* Win % */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Win %</p>
+                                        <p className="text-sm dark:text-gray-400">Win %</p>
                                         <p className="text-2xl font-bold text-yellow-400">{winPercentage}%</p>
                                     </div>
 
                                     {/* Win/Loss Ratio */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Win/Loss Ratio</p>
+                                        <p className="text-sm dark:text-gray-400">Win/Loss Ratio</p>
                                         <p
                                             className={`text-2xl font-bold ${totalLosses === 0
                                                 ? "text-gray-400"
@@ -351,7 +387,7 @@ export default function DashBoard() {
 
                                     {/* Total Invested */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Total Invested</p>
+                                        <p className="text-sm dark:text-gray-400">Total Invested</p>
                                         <p className="text-2xl font-bold text-blue-500">
                                             {formatEther(totalAmountInvested)}
                                             <span className="text-sm"> {nativeCurrency}</span>
@@ -360,7 +396,7 @@ export default function DashBoard() {
 
                                     {/* Total Won */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Total Won</p>
+                                        <p className="text-sm dark:text-gray-400">Total Won</p>
                                         <p className="text-2xl font-bold text-green-500">
                                             {formatEther(totalAmountWon)}
                                             <span className="text-sm"> {nativeCurrency}</span>
@@ -369,7 +405,7 @@ export default function DashBoard() {
 
                                     {/* Net Gain/Loss */}
                                     <div>
-                                        <p className="text-sm text-gray-400">Net Gain/Loss</p>
+                                        <p className="text-sm dark:text-gray-400">Net Gain/Loss</p>
                                         <p className={`text-2xl font-bold ${netGains > BigInt(0) ? "text-green-500" : "text-red-500"}`}>
                                             {parseFloat(formatEther(netGains)).toFixed(3)}
                                             <span className="text-sm"> {nativeCurrency}</span>
@@ -378,7 +414,7 @@ export default function DashBoard() {
 
                                     {/* Refund Balance */}
                                     <div className="flex flex-col items-center justify-center">
-                                        <p className="text-sm text-gray-400">Refund Balance</p>
+                                        <p className="text-sm dark:text-gray-400">Refund Balance</p>
                                         <p className="text-2xl font-bold text-white">
                                             {formatEther(refundAmount)}
                                             <span className="text-sm"> {nativeCurrency}</span>
@@ -386,10 +422,20 @@ export default function DashBoard() {
                                         {refundAmount > BigInt(0) && (
                                             <button
                                                 onClick={handleWithdrawRefund}
+                                                disabled={withdrawingRefund}
                                                 className="mt-3 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                <ArrowPathIcon className="w-5 h-5" />
-                                                Withdraw
+                                                {withdrawingRefund ? (
+                                                    <>
+                                                        <ArrowPathIcon className="w-5 h-5 animate-spin" />
+                                                        Withdrawing...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ArrowPathIcon className="w-5 h-5" />
+                                                        Withdraw
+                                                    </>
+                                                )}
                                             </button>
                                         )}
                                     </div>
@@ -399,7 +445,7 @@ export default function DashBoard() {
 
                         {/* Active Matches Section */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
+                            <h2 className="text-2xl font-bold text-blue-600 dark:text-gray-200 mb-6 flex items-center">
                                 <PlayIcon className="w-6 h-6 text-gray-700 mr-2" />
                                 Active Matches
                             </h2>
@@ -449,10 +495,20 @@ export default function DashBoard() {
                                                     {match.state === 0 && match.player1 === address && (
                                                         <button
                                                             onClick={() => handleCancelMatch(match.id)}
-                                                            className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium transition-all transform hover:-translate-y-0.5 backdrop-blur-lg bg-opacity-30"
+                                                            disabled={cancelingMatchId === match.id}
+                                                            className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium transition-all transform hover:-translate-y-0.5 backdrop-blur-lg bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed"
                                                         >
-                                                            <XMarkIcon className="h-5 w-5" />
-                                                            Cancel
+                                                            {cancelingMatchId === match.id ? (
+                                                                <>
+                                                                    <XMarkIcon className="h-5 w-5 animate-spin" />
+                                                                    Canceling match...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <XMarkIcon className="h-5 w-5" />
+                                                                    Cancel
+                                                                </>
+                                                            )}
                                                         </button>
                                                     )}
                                                 </div>
@@ -465,7 +521,7 @@ export default function DashBoard() {
 
                         {/* Match History Section */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
+                            <h2 className="text-2xl font-bold text-blue-600 dark:text-gray-200 mb-6 flex items-center">
                                 <DocumentTextIcon className="w-6 h-6 text-gray-700 mr-2" />
                                 Match History
                             </h2>
@@ -492,10 +548,10 @@ export default function DashBoard() {
                                                 <div
                                                     key={match.id.toString()}
                                                     className={`rounded-xl p-6 ${won
-                                                        ? "bg-green-500/5 dark:bg-gray-500/30 dark:border dark:border-gray-500 backdrop-blur-lg"
+                                                        ? "bg-green-500/5 dark:bg-gray-500/30 border border-gray-600 dark:border dark:border-gray-500 backdrop-blur-lg"
                                                         : isCanceled
-                                                            ? "bg-yellow-500/5 dark:bg-gray-500/30 dark:border dark:border-gray-500 backdrop-blur-lg"
-                                                            : "bg-red-500/5 dark:border dark:border-gray-500 dark:bg-gray-500/30 backdrop-blur-lg"
+                                                            ? "bg-yellow-500/5 border border-gray-600 dark:bg-gray-500/30 dark:border dark:border-gray-500 backdrop-blur-lg"
+                                                            : "bg-red-500/5 border border-gray-600 dark:border dark:border-gray-500 dark:bg-gray-500/30 backdrop-blur-lg"
                                                         } transition-transform hover:scale-[1.02]`}
                                                 >
                                                     <div className="flex justify-between items-start mb-4">
@@ -524,7 +580,7 @@ export default function DashBoard() {
                                                                 {match.result ? "Heads" : "Tails"}
                                                             </p>
                                                         </div>
-                                                        <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+                                                        <div className="border-t border-black dark:border-gray-700 pt-3">
                                                             <p className="text-sm text-gray-900 dark:text-gray-400 mt-2">
                                                                 <span className="block">
                                                                     <strong>Start time:</strong>{" "}
@@ -547,7 +603,7 @@ export default function DashBoard() {
                                                                     })}
                                                                 </span>
                                                             </p>
-                                                            <p className="text-sm text-gray-100 dark:text-blue-400 flex justify-end">
+                                                            <p className="text-sm text-black dark:text-blue-400 flex justify-end">
                                                                 #{match.id.toString()}
                                                             </p>
                                                         </div>

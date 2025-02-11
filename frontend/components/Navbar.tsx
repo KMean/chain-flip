@@ -8,6 +8,7 @@ import { CONTRACTS } from '@/config/contracts.config';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 
 const SepoliaChainId = 11155111;
+const BnbTestnetChainId = 97;
 
 const Navbar = () => {
     const { address } = useAccount();
@@ -24,7 +25,16 @@ const Navbar = () => {
 
     // Get chain ID
     const chainId = useChainId();
-    const chainFlipContractAddress = chainId === SepoliaChainId ? CONTRACTS.chainFlip.sepolia : CONTRACTS.chainFlip.amoy;
+
+    //get chainFlip contract address based on chainId
+    let chainFlipContractAddress;
+    if (chainId === SepoliaChainId) {
+        chainFlipContractAddress = CONTRACTS.chainFlip.sepolia;
+    } else if (chainId === BnbTestnetChainId) {
+        chainFlipContractAddress = CONTRACTS.chainFlip.bnbtestnet; // Use the BSC testnet address
+    } else {
+        chainFlipContractAddress = CONTRACTS.chainFlip.amoy;
+    }
 
     const { data: ownerAddress } = useReadContract({
         address: chainFlipContractAddress,
@@ -53,7 +63,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="fixed top-0 left-0 w-full z-50 bg-white/10 dark:bg-gray-900/10 backdrop-blur-lg p-4 text-gray-900 dark:text-white">
+        <nav className="fixed top-0 left-0 w-full z-50 bg-white/1 dark:bg-gray-900/1 backdrop-blur-lg p-4 text-gray-900 dark:text-white">
             <div className="flex items-center justify-between">
                 <Link href="/" className="flex items-center">
                     <Image
@@ -67,13 +77,13 @@ const Navbar = () => {
 
                 {/* Desktop Navigation */}
                 <div className="hidden lg:flex lg:items-center lg:space-x-6">
-                    <Link href="/matches" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Matches</Link>
-                    <Link href="/dashboard" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Dashboard</Link>
-                    <Link href="/leaderboard" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Leader Board</Link>
-                    {isOwner && <Link href="/admin" className="hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200">Admin</Link>}
+                    <Link href="/matches" className="hover:text-blue-500 dark:hover:text-purple-300 transition-colors duration-200">Matches</Link>
+                    <Link href="/dashboard" className="hover:text-blue-500 dark:hover:text-purple-300 transition-colors duration-200">Dashboard</Link>
+                    <Link href="/leaderboard" className="hover:text-blue-500 dark:hover:text-purple-300 transition-colors duration-200">Leader Board</Link>
+                    {isOwner && <Link href="/admin" className="hover:text-blue-500 dark:hover:text-purple-300 transition-colors duration-200">Admin</Link>}
 
                     {/* Theme Toggle Button */}
-                    <button onClick={toggleTheme} className="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-all">
+                    <button onClick={toggleTheme} className="ml-4 p-2 rounded-full bg-purple-300/1 dark:bg-gray-800/1 hover:bg-purple-300/50 dark:hover:bg-blue-500/20 transition-all">
                         {theme === 'light' ? <MoonIcon className="w-6 h-6" /> : <SunIcon className="w-6 h-6" />}
                     </button>
 

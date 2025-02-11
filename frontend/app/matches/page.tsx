@@ -292,7 +292,7 @@ const Matches = () => {
                         ))
                     ) : (
                         <div className="text-center col-span-full">
-                            <FaceFrownIcon className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500" />
+                            <FaceFrownIcon className="w-16 h-16 mx-auto text-blue-700 dark:text-gray-500" />
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-2">
                                 No active matches found
                             </h3>

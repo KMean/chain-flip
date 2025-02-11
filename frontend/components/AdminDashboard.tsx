@@ -54,14 +54,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const nativeCurrency = chain?.nativeCurrency?.symbol ?? "???"; // Fallback if undefined
 
     return (
-        <div className="min-h-screen pt-40 p-8 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-900 text-white">
+        <div className="pt-40 relative min-h-screen bg-gradient-to-br from-blue-100 to-purple-900 dark:from-gray-900 dark:to-gray-900 overflow-hidden">
             {/* Glowing Background Layer */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 left-1/2 w-[600px] h-[600px] bg-purple-500 opacity-20 blur-[160px]"></div>
-                <div className="absolute top-40 right-1/3 w-[400px] h-[400px] bg-blue-500 opacity-20 blur-[140px]"></div>
+                <div className="absolute -top-40 left-1/2 w-[600px] h-[600px] bg-purple-300 dark:bg-purple-500 opacity-20 blur-[160px]"></div>
+                <div className="absolute top-40 right-1/3 w-[400px] h-[400px] bg-blue-300 dark:bg-blue-500 opacity-20 blur-[140px]"></div>
             </div>
 
-            <h1 className="text-2xl font-bold mb-6 text-center">Admin Dashboard</h1>
+            <h1 className="text-2xl font-bold mb-6 text-center text-blue-700 dark:text-white">Admin Dashboard</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative max-w-4xl mx-auto">
                 {/* Fee Section */}
