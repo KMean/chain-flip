@@ -40,13 +40,24 @@ const Matches = () => {
         if (chainId) {
             if (chainId === SepoliaChainId) {
                 setMinBet(0.001);
+
             } else if (chainId === BnbTestnetChainId) {
                 setMinBet(0.005);
+
             } else {
                 setMinBet(0.1);
+
             }
         }
     }, [chainId]);
+
+    useEffect(() => {
+        console.log('chainId', chainId);
+        console.log("Updated minBet:", minBet);
+    }, [chainId, minBet]);
+
+
+
 
     // Choose the contract address based on chainId
     let chainFlipContractAddress;
@@ -109,6 +120,10 @@ const Matches = () => {
             setEndedMatches(ended);
         }
     }, [allMatchesData]);
+
+    useEffect(() => {
+        setBetAmount(minBet);
+    }, [minBet]);
 
     // Modified handleCreateMatch with toast notifications
     const handleCreateMatch = () => {
@@ -236,7 +251,7 @@ const Matches = () => {
                             value={betAmount}
                             onChange={(e) => setBetAmount(parseFloat(e.target.value))}
                             className="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none w-full lg:w-auto"
-                            placeholder={`Bet Amount (min ${minBet} ${nativeCurrency})`}
+                            placeholder={`min bet ${minBet} ${nativeCurrency}`}
                         />
 
                         {/* Choice Selector */}
