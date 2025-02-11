@@ -1,8 +1,41 @@
-# Chain-Flip
+<p align="center">
+  <img src="https://raw.githubusercontent.com/KMean/chain-flip/main/frontend/public/chainflip_logo.png" alt="ChainFlip Logo" width="150"/>
+</p>
 
-**ChainFlip** is a decentralized coin flip betting game, leveraging Chainlink VRF for provable randomness. Players can create and join matches, with automatic payout to the winner. 
+<h2 align="center">A decentralized CoinFlip game leveraging Chainlink VRF and Automation.</h2>
 
-Try it out at [HERE](https://chainflip-pink.vercel.app)!
+<p align="center">
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
+  </a>
+  <img src="https://img.shields.io/badge/Tests-Passing-brightgreen" alt="Tests">
+  <a href="https://getfoundry.sh/">
+    <img src="https://img.shields.io/badge/Built%20With-Foundry-blue" alt="Built with Foundry">
+  </a>
+  <a href="https://nextjs.org/">
+    <img src="https://img.shields.io/badge/Frontend-Next.js-blue" alt="Next.js">
+  </a>
+  <a href="https://www.rainbowkit.com/">
+    <img src="https://img.shields.io/badge/Wallet-RainbowKit-orange" alt="RainbowKit">
+  </a>
+  <a href="https://chain.link/">
+    <img src="https://img.shields.io/badge/Chainlink-VRF-blue" alt="Chainlink VRF">
+  </a>
+  <img src="https://img.shields.io/badge/Coverage-92%25-green" alt="Coverage">
+</p>
+
+---
+
+### About ChainFlip
+
+**ChainFlip** is a decentralized coin flip betting game, leveraging **Chainlink VRF** for provable randomness and **Chainlink Automation**. Players can create and join matches, with automatic payouts to the winner.
+
+🛠 **This is a learning project** built to explore **smart contracts and web3 development**.  
+🛑 **Currently deployed on:** **Amoy, Sepolia, and BNB Testnet**.  
+
+🚀 [**Try ChainFlip on Vercel →**](https://chainflip-pink.vercel.app/)
+
+
 ## Features
 
 - **Decentralized Betting**: Fair and transparent coin flip game.
@@ -285,4 +318,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-Enjoy flipping with **ChainFlip**!
+🎲 **Try your luck and flip the coin!** 🪙
