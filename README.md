@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/KMean/chain-flip/main/frontend/public/chainflip_logo.png" alt="ChainFlip Logo" width="150"/>
+  <img src="frontend/public/chainflip_logo.png" alt="ChainFlip Logo" width="150"/>
 </p>
 
 <h2 align="center">A decentralized CoinFlip game leveraging Chainlink VRF and Automation.</h2>
