@@ -275,7 +275,7 @@ git submodule update --init --recursive
 ```
 ```
 
-## Encrypt Metamask Private Key (Optional but recommended):
+# Encrypt Metamask Private Key (Optional but recommended):
    ```bash
    cast wallet import your-account-name --interactive
    ```
