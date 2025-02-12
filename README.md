@@ -283,6 +283,7 @@ git submodule update --init --recursive
    Follow the prompts to secure your private key.
 
 ### Deploy the Contract
+example for amoy, repeat if you want to deploy also on other chains:
 
 ```bash
 forge script --chain amoy script/DeployChainFlip.s.sol --rpc-url $AMOY_RPC_URL --account 'your-account-name' --broadcast --verify -vvvv  
