@@ -273,10 +273,12 @@ git submodule update --init --recursive
 
       Ran 4 test suites in 1.68s (3.55s CPU time): 72 tests passed, 0 failed, 0 skipped (72 total tests)
 ```
+
 5. **Encrypt Metamask Private Key** (Optional but recommended):
    ```bash
    cast wallet import your-account-name --interactive
    ```
+
    Follow the prompts to secure your private key.
 
 ### Deploy the Contract
